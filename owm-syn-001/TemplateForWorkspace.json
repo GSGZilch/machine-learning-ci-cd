@@ -219,7 +219,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "5062d93a-51ea-44f2-a855-3e8d96d3b5e3"
+						"spark.autotune.trackingId": "23861484-5dd5-4869-ab63-f3f5fa1e1ac0"
 					}
 				},
 				"metadata": {
@@ -556,7 +556,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c3ddebcf-0266-4c09-a3dd-b993bb5aaaa4"
+						"spark.autotune.trackingId": "e7d05abf-381a-4d2c-87c7-7ba55ecd504a"
 					}
 				},
 				"metadata": {
@@ -672,6 +672,36 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/pipelines/PL - Ingest Weather Data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/HourlyMain')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "PL - Main",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2022-06-01T16:00:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/PL - Main')]"
 			]
 		}
 	]
