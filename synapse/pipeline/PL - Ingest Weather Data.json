@@ -1,0 +1,35 @@
+{
+	"name": "PL - Ingest Weather Data",
+	"properties": {
+		"activities": [
+			{
+				"name": "Ingest Weather Data",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "ingest_owm_data",
+						"type": "NotebookReference"
+					},
+					"snapshot": true,
+					"sparkPool": {
+						"referenceName": "SparkSmallCpu",
+						"type": "BigDataPoolReference"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "P01 - Data Ingestion"
+		},
+		"annotations": []
+	}
+}
