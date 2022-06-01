@@ -158,7 +158,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "ba476bd9-be3b-4fd7-a374-19e88cb8bbc4"
+						"spark.autotune.trackingId": "43b35b77-ec3b-445d-af8d-4a3118cf6378"
 					}
 				},
 				"metadata": {
@@ -208,10 +208,10 @@
 						"source": [
 							"# Parameter cell to define default values for notebook input parameters\r\n",
 							"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
-							"location = \"Brussels\""
+							"location = \"brussels\""
 						],
 						"outputs": [],
-						"execution_count": 71
+						"execution_count": 83
 					},
 					{
 						"cell_type": "code",
@@ -226,7 +226,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 72
+						"execution_count": 84
 					},
 					{
 						"cell_type": "code",
@@ -245,7 +245,7 @@
 							"%run utils/location_mapping"
 						],
 						"outputs": [],
-						"execution_count": 73
+						"execution_count": 85
 					},
 					{
 						"cell_type": "code",
@@ -328,7 +328,7 @@
 							"}"
 						],
 						"outputs": [],
-						"execution_count": 75
+						"execution_count": 86
 					},
 					{
 						"cell_type": "code",
@@ -347,7 +347,7 @@
 							"data[\"timestamp\"] = pipeline_trigger_time"
 						],
 						"outputs": [],
-						"execution_count": 76
+						"execution_count": 87
 					},
 					{
 						"cell_type": "code",
@@ -390,7 +390,7 @@
 							"]"
 						],
 						"outputs": [],
-						"execution_count": 77
+						"execution_count": 88
 					},
 					{
 						"cell_type": "code",
@@ -412,7 +412,7 @@
 							"df.columns = column_names"
 						],
 						"outputs": [],
-						"execution_count": 78
+						"execution_count": 89
 					},
 					{
 						"cell_type": "code",
@@ -444,7 +444,7 @@
 							"df.to_csv(output_path, index=False)"
 						],
 						"outputs": [],
-						"execution_count": 80
+						"execution_count": 90
 					}
 				]
 			},
@@ -495,7 +495,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f71653d3-60ba-447f-8b95-81ee39242fdd"
+						"spark.autotune.trackingId": "752d52bf-fa7b-4673-b9c0-fed35578a35e"
 					}
 				},
 				"metadata": {
@@ -517,8 +517,12 @@
 						"source": [
 							"LOCATION_COORDS = {\r\n",
 							"    \"BRUSSELS\": {\r\n",
-							"        \"lat\": 50,\r\n",
-							"        \"lon\": 5\r\n",
+							"        \"lat\": 50.846698,\r\n",
+							"        \"lon\": 4.352522\r\n",
+							"    },\r\n",
+							"    \"DUBLIN\": {\r\n",
+							"        \"lat\": 53.268889, \r\n",
+							"        \"lon\": -6.196880\r\n",
 							"    }\r\n",
 							"}"
 						],
