@@ -158,7 +158,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7ffe0026-3bda-49b8-8fba-2f45b73309ac"
+						"spark.autotune.trackingId": "ba476bd9-be3b-4fd7-a374-19e88cb8bbc4"
 					}
 				},
 				"metadata": {
@@ -191,40 +191,6 @@
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
-						"source": [
-							"import requests\r\n",
-							"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
-							"from pyspark.sql import SparkSession, Row\r\n",
-							"from pyspark.sql.functions import *\r\n",
-							"import json\r\n",
-							"import pandas as pd\r\n",
-							"from datetime import datetime"
-						],
-						"outputs": [],
-						"execution_count": 53
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"%run utils/location_mapping"
-						],
-						"outputs": [],
-						"execution_count": 70
-					},
-					{
-						"cell_type": "code",
 						"metadata": {
 							"jupyter": {
 								"source_hidden": false,
@@ -245,7 +211,41 @@
 							"location = \"Brussels\""
 						],
 						"outputs": [],
-						"execution_count": 54
+						"execution_count": 71
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import requests\r\n",
+							"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
+							"from pyspark.sql import SparkSession, Row\r\n",
+							"from pyspark.sql.functions import *\r\n",
+							"import json\r\n",
+							"import pandas as pd\r\n",
+							"from datetime import datetime"
+						],
+						"outputs": [],
+						"execution_count": 72
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"%run utils/location_mapping"
+						],
+						"outputs": [],
+						"execution_count": 73
 					},
 					{
 						"cell_type": "code",
@@ -280,7 +280,7 @@
 							"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
 						],
 						"outputs": [],
-						"execution_count": 55
+						"execution_count": 74
 					},
 					{
 						"cell_type": "code",
@@ -328,7 +328,7 @@
 							"}"
 						],
 						"outputs": [],
-						"execution_count": 56
+						"execution_count": 75
 					},
 					{
 						"cell_type": "code",
@@ -347,7 +347,7 @@
 							"data[\"timestamp\"] = pipeline_trigger_time"
 						],
 						"outputs": [],
-						"execution_count": 57
+						"execution_count": 76
 					},
 					{
 						"cell_type": "code",
@@ -390,7 +390,7 @@
 							"]"
 						],
 						"outputs": [],
-						"execution_count": 62
+						"execution_count": 77
 					},
 					{
 						"cell_type": "code",
@@ -412,7 +412,7 @@
 							"df.columns = column_names"
 						],
 						"outputs": [],
-						"execution_count": 63
+						"execution_count": 78
 					},
 					{
 						"cell_type": "code",
@@ -428,25 +428,8 @@
 							}
 						},
 						"source": [
-							"dt = datetime.strptime(pipeline_trigger_time, \"%Y-%m-%d %H:%M:%S\")"
-						],
-						"outputs": [],
-						"execution_count": 68
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
+							"dt = datetime.strptime(pipeline_trigger_time, \"%Y-%m-%d %H:%M:%S\")\r\n",
+							"\r\n",
 							"adls_name = \"owmadls001\"\r\n",
 							"container_name = \"dataplatform\"\r\n",
 							"\r\n",
@@ -454,14 +437,14 @@
 							"\r\n",
 							"folder_path = f\"bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\"\r\n",
 							"\r\n",
-							"file_name = \"weather_{dt.year}{dt.month:02d}{dt.day:02d}-{dt.hour:02d}{dt.minute:02d}{dt.second:02d}.csv\"\r\n",
+							"file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}-{dt.hour:02d}{dt.minute:02d}{dt.second:02d}.csv\"\r\n",
 							"\r\n",
 							"output_path = f\"{adls_url}/{folder_path}/{file_name}\"\r\n",
 							"\r\n",
 							"df.to_csv(output_path, index=False)"
 						],
 						"outputs": [],
-						"execution_count": 69
+						"execution_count": 80
 					}
 				]
 			},
@@ -512,7 +495,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "2f89b46e-b823-4a98-8eff-10ff61f46e51"
+						"spark.autotune.trackingId": "f71653d3-60ba-447f-8b95-81ee39242fdd"
 					}
 				},
 				"metadata": {
