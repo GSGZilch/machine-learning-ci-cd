@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3b962988-1a1c-45b5-a837-4077beda5a85"
+				"spark.autotune.trackingId": "5d4037f3-88a2-4174-af7c-1154bc431223"
 			}
 		},
 		"metadata": {
@@ -301,7 +301,7 @@
 					"\r\n",
 					"adls_url = f\"abfss://{container_name}@{adls_name}.dfs.core.windows.net/\"\r\n",
 					"\r\n",
-					"folder_path = f\"bronze/weather/{location}/{dt.year}/{dt.month:02d}/{dt.day:02d}\"\r\n",
+					"folder_path = f\"bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\"\r\n",
 					"\r\n",
 					"file_name = \"weather_{dt.year}{dt.month:02d}{dt.day:02d}-{dt.hour:02d}{dt.minute:02d}{dt.second:02d}.csv\"\r\n",
 					"\r\n",
