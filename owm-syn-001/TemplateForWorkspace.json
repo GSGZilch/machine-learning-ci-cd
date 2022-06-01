@@ -27,7 +27,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Ingest Weather Data",
+						"name": "Ingest Weather - Brussels",
 						"type": "SynapseNotebook",
 						"dependsOn": [],
 						"policy": {
@@ -43,6 +43,62 @@
 								"referenceName": "ingest_owm_data",
 								"type": "NotebookReference"
 							},
+							"parameters": {
+								"pipeline_trigger_name": {
+									"value": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"type": "string"
+								},
+								"location": {
+									"value": {
+										"value": "brussels",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "SparkSmallCpu",
+								"type": "BigDataPoolReference"
+							}
+						}
+					},
+					{
+						"name": "Ingest Weather - Dublin",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "ingest_owm_data",
+								"type": "NotebookReference"
+							},
+							"parameters": {
+								"pipeline_trigger_name": {
+									"value": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"type": "string"
+								},
+								"location": {
+									"value": {
+										"value": "dublin",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
+							},
 							"snapshot": true,
 							"sparkPool": {
 								"referenceName": "SparkSmallCpu",
@@ -54,6 +110,11 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"parameters": {
+					"dateAndTimeOfImport": {
+						"type": "string"
+					}
 				},
 				"folder": {
 					"name": "P01 - Data Ingestion"
@@ -158,7 +219,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "43b35b77-ec3b-445d-af8d-4a3118cf6378"
+						"spark.autotune.trackingId": "5062d93a-51ea-44f2-a855-3e8d96d3b5e3"
 					}
 				},
 				"metadata": {
@@ -495,7 +556,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "752d52bf-fa7b-4673-b9c0-fed35578a35e"
+						"spark.autotune.trackingId": "c3ddebcf-0266-4c09-a3dd-b993bb5aaaa4"
 					}
 				},
 				"metadata": {
@@ -532,6 +593,86 @@
 				]
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL - Main')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "P01 - Data Ingestion",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P01 - Data Ingestion",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"dateAndTimeOfImport": {
+									"value": "@pipeline().TriggerTime",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/P01 - Data Ingestion')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Ingest Weather Data",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL - Ingest Weather Data",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"dateAndTimeOfImport": {
+									"value": "@pipeline().parameters.dateAndTimeOfImport",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"dateAndTimeOfImport": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "_LoadEntity"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/PL - Ingest Weather Data')]"
+			]
 		}
 	]
 }
