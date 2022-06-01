@@ -1,0 +1,49 @@
+{
+	"name": "location_mapping",
+	"properties": {
+		"folder": {
+			"name": "utils"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "e8806ae2-2232-4326-8508-23fc3a0bfa22"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"LOCATION_COORDS = {\r\n",
+					"    \"BRUSSELS\": {\r\n",
+					"        \"lat\": 50,\r\n",
+					"        \"lon\": 5\r\n",
+					"    }\r\n",
+					"}"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}

@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "df8cce4e-5592-4f42-a304-b6ba9e0d3989"
+				"spark.autotune.trackingId": "3b962988-1a1c-45b5-a837-4077beda5a85"
 			}
 		},
 		"metadata": {
@@ -51,9 +51,56 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"import requests"
+					"import requests\r\n",
+					"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
+					"from pyspark.sql import SparkSession, Row\r\n",
+					"from pyspark.sql.functions import *\r\n",
+					"import json\r\n",
+					"import pandas as pd\r\n",
+					"from datetime import datetime"
 				],
-				"execution_count": 3
+				"execution_count": 53
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"%run utils/location_mapping"
+				],
+				"execution_count": 70
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"tags": [
+						"parameters"
+					]
+				},
+				"source": [
+					"# Parameter cell to define default values for notebook input parameters\r\n",
+					"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
+					"location = \"Brussels\""
+				],
+				"execution_count": 54
 			},
 			{
 				"cell_type": "code",
@@ -74,16 +121,20 @@
 					"api_endpoint = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-endpoint')\r\n",
 					"api_key = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-key')\r\n",
 					"\r\n",
+					"lat = LOCATION_COORDS[location.upper()][\"lat\"]\r\n",
+					"lon = LOCATION_COORDS[location.upper()][\"lon\"]\r\n",
+					"\r\n",
 					"params = {\r\n",
-					"    \"lat\": 53,\r\n",
-					"    \"lon\": 6,\r\n",
-					"    \"appid\": api_key\r\n",
+					"    \"lat\": lat,\r\n",
+					"    \"lon\": lon,\r\n",
+					"    \"appid\": api_key,\r\n",
+					"    \"exclude\": \"minutely,hourly,daily\"\r\n",
 					"}\r\n",
 					"\r\n",
 					"resp = requests.get(api_endpoint, params=params)\r\n",
 					"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
 				],
-				"execution_count": 9
+				"execution_count": 55
 			},
 			{
 				"cell_type": "code",
@@ -99,9 +150,166 @@
 					}
 				},
 				"source": [
-					"resp.json()"
+					"data = {\r\n",
+					"  \"lat\": 39.31,\r\n",
+					"  \"lon\": -74.5,\r\n",
+					"  \"timezone\": \"America/New_York\",\r\n",
+					"  \"timezone_offset\": -18000,\r\n",
+					"  \"current\": {\r\n",
+					"    \"dt\": 1646318698,\r\n",
+					"    \"sunrise\": 1646306882,\r\n",
+					"    \"sunset\": 1646347929,\r\n",
+					"    \"temp\": 282.21,\r\n",
+					"    \"feels_like\": 278.41,\r\n",
+					"    \"pressure\": 1014,\r\n",
+					"    \"humidity\": 65,\r\n",
+					"    \"dew_point\": 275.99,\r\n",
+					"    \"uvi\": 2.55,\r\n",
+					"    \"clouds\": 40,\r\n",
+					"    \"visibility\": 10000,\r\n",
+					"    \"wind_speed\": 8.75,\r\n",
+					"    \"wind_deg\": 360,\r\n",
+					"    \"wind_gust\": 13.89,\r\n",
+					"    \"weather\": [\r\n",
+					"      {\r\n",
+					"        \"id\": 802,\r\n",
+					"        \"main\": \"Clouds\",\r\n",
+					"        \"description\": \"scattered clouds\",\r\n",
+					"        \"icon\": \"03d\"\r\n",
+					"      }\r\n",
+					"    ]\r\n",
+					"  }\r\n",
+					"}"
 				],
-				"execution_count": 12
+				"execution_count": 56
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"data[\"timestamp\"] = pipeline_trigger_time"
+				],
+				"execution_count": 57
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"column_names = [\r\n",
+					"    \"lat\",\r\n",
+					"    \"lon\",\r\n",
+					"    \"timezone\",\r\n",
+					"    \"timezone_offset\",\r\n",
+					"    \"timestamp\",\r\n",
+					"    \"dt\",\r\n",
+					"    \"sunrise\",\r\n",
+					"    \"sunset\",\r\n",
+					"    \"temp\",\r\n",
+					"    \"feels_like\",\r\n",
+					"    \"pressure\",\r\n",
+					"    \"humidity\",\r\n",
+					"    \"dew_point\",\r\n",
+					"    \"uvi\",\r\n",
+					"    \"clouds\",\r\n",
+					"    \"visibility\",\r\n",
+					"    \"wind_speed\",\r\n",
+					"    \"wind_deg\",\r\n",
+					"    \"wind_gust\",\r\n",
+					"    \"weather_id\",\r\n",
+					"    \"weather_main\",\r\n",
+					"    \"weather_description\",\r\n",
+					"    \"weather_icon\"\r\n",
+					"]"
+				],
+				"execution_count": 62
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df = pd.json_normalize(data)\r\n",
+					"df = df.explode('current.weather').to_dict(orient='records')\r\n",
+					"df = pd.json_normalize(df)\r\n",
+					"df.columns = column_names"
+				],
+				"execution_count": 63
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dt = datetime.strptime(pipeline_trigger_time, \"%Y-%m-%d %H:%M:%S\")"
+				],
+				"execution_count": 68
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"adls_name = \"owmadls001\"\r\n",
+					"container_name = \"dataplatform\"\r\n",
+					"\r\n",
+					"adls_url = f\"abfss://{container_name}@{adls_name}.dfs.core.windows.net/\"\r\n",
+					"\r\n",
+					"folder_path = f\"bronze/weather/{location}/{dt.year}/{dt.month:02d}/{dt.day:02d}\"\r\n",
+					"\r\n",
+					"file_name = \"weather_{dt.year}{dt.month:02d}{dt.day:02d}-{dt.hour:02d}{dt.minute:02d}{dt.second:02d}.csv\"\r\n",
+					"\r\n",
+					"output_path = f\"{adls_url}/{folder_path}/{file_name}\"\r\n",
+					"\r\n",
+					"df.to_csv(output_path, index=False)"
+				],
+				"execution_count": 69
 			}
 		]
 	}
