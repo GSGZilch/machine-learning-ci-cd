@@ -1,0 +1,35 @@
+{
+	"name": "P01 - Data Ingestion",
+	"properties": {
+		"activities": [
+			{
+				"name": "Ingest Weather Data",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL - Ingest Weather Data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"dateAndTimeOfImport": {
+							"value": "@pipeline().parameters.dateAndTimeOfImport",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"dateAndTimeOfImport": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "_LoadEntity"
+		},
+		"annotations": []
+	}
+}
