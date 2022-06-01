@@ -1,0 +1,10 @@
+{
+	"name": "ls_kv_main",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://mlcicd-kv-001.vault.azure.net/"
+		}
+	}
+}
