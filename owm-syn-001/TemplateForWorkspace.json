@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'owm-syn-001-WorkspaceDefaultSqlServer'"
 		},
+		"ls_kv_main_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://mlcicd-kv-001.vault.azure.net/"
+		},
 		"owm-syn-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://owmadls001.dfs.core.windows.net"
@@ -20,6 +24,50 @@
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/P01 - Data Ingestion')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Ingest Weather Data",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL - Ingest Weather Data",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"dateAndTimeOfImport": {
+									"value": "@pipeline().parameters.dateAndTimeOfImport",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"dateAndTimeOfImport": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "_LoadEntity"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/PL - Ingest Weather Data')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/PL - Ingest Weather Data')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
@@ -127,6 +175,55 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/PL - Main')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "P01 - Data Ingestion",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P01 - Data Ingestion",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"dateAndTimeOfImport": {
+									"value": "@pipeline().TriggerTime",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_kv_main')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('ls_kv_main_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/owm-syn-001-WorkspaceDefaultSqlServer')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -167,6 +264,36 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/HourlyMain')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "PL - Main",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2022-06-01T16:00:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/PL - Main')]"
 			]
 		},
 		{
@@ -219,7 +346,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "23861484-5dd5-4869-ab63-f3f5fa1e1ac0"
+						"spark.autotune.trackingId": "ea2cdab1-9868-4415-bb23-d59e6278594e"
 					}
 				},
 				"metadata": {
@@ -324,8 +451,8 @@
 						"source": [
 							"key_vault_name = 'mlcicd-kv-001'\r\n",
 							"\r\n",
-							"api_endpoint = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-endpoint')\r\n",
-							"api_key = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-key')\r\n",
+							"api_endpoint = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-endpoint', 'ls_kv_main')\r\n",
+							"api_key = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-key', 'ls_kv_main')\r\n",
 							"\r\n",
 							"lat = LOCATION_COORDS[location.upper()][\"lat\"]\r\n",
 							"lon = LOCATION_COORDS[location.upper()][\"lon\"]\r\n",
@@ -338,6 +465,7 @@
 							"}\r\n",
 							"\r\n",
 							"resp = requests.get(api_endpoint, params=params)\r\n",
+							"data = resp.json()\r\n",
 							"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
 						],
 						"outputs": [],
@@ -357,36 +485,7 @@
 							}
 						},
 						"source": [
-							"data = {\r\n",
-							"  \"lat\": 39.31,\r\n",
-							"  \"lon\": -74.5,\r\n",
-							"  \"timezone\": \"America/New_York\",\r\n",
-							"  \"timezone_offset\": -18000,\r\n",
-							"  \"current\": {\r\n",
-							"    \"dt\": 1646318698,\r\n",
-							"    \"sunrise\": 1646306882,\r\n",
-							"    \"sunset\": 1646347929,\r\n",
-							"    \"temp\": 282.21,\r\n",
-							"    \"feels_like\": 278.41,\r\n",
-							"    \"pressure\": 1014,\r\n",
-							"    \"humidity\": 65,\r\n",
-							"    \"dew_point\": 275.99,\r\n",
-							"    \"uvi\": 2.55,\r\n",
-							"    \"clouds\": 40,\r\n",
-							"    \"visibility\": 10000,\r\n",
-							"    \"wind_speed\": 8.75,\r\n",
-							"    \"wind_deg\": 360,\r\n",
-							"    \"wind_gust\": 13.89,\r\n",
-							"    \"weather\": [\r\n",
-							"      {\r\n",
-							"        \"id\": 802,\r\n",
-							"        \"main\": \"Clouds\",\r\n",
-							"        \"description\": \"scattered clouds\",\r\n",
-							"        \"icon\": \"03d\"\r\n",
-							"      }\r\n",
-							"    ]\r\n",
-							"  }\r\n",
-							"}"
+							"print(data)"
 						],
 						"outputs": [],
 						"execution_count": 86
@@ -512,6 +611,63 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/location_mapping')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "utils"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "997001d7-4384-4c07-bde8-b6ee017e2e7f"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"LOCATION_COORDS = {\r\n",
+							"    \"BRUSSELS\": {\r\n",
+							"        \"lat\": 50.846698,\r\n",
+							"        \"lon\": 4.352522\r\n",
+							"    },\r\n",
+							"    \"DUBLIN\": {\r\n",
+							"        \"lat\": 53.268889, \r\n",
+							"        \"lon\": -6.196880\r\n",
+							"    }\r\n",
+							"}"
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/SparkSmallCpu')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -535,174 +691,6 @@
 			},
 			"dependsOn": [],
 			"location": "westeurope"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/location_mapping')]",
-			"type": "Microsoft.Synapse/workspaces/notebooks",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"folder": {
-					"name": "utils"
-				},
-				"nbformat": 4,
-				"nbformat_minor": 2,
-				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
-					"numExecutors": 2,
-					"conf": {
-						"spark.dynamicAllocation.enabled": "false",
-						"spark.dynamicAllocation.minExecutors": "2",
-						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e7d05abf-381a-4d2c-87c7-7ba55ecd504a"
-					}
-				},
-				"metadata": {
-					"saveOutput": true,
-					"enableDebugMode": false,
-					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "python"
-					},
-					"language_info": {
-						"name": "python"
-					},
-					"sessionKeepAliveTimeout": 30
-				},
-				"cells": [
-					{
-						"cell_type": "code",
-						"metadata": {},
-						"source": [
-							"LOCATION_COORDS = {\r\n",
-							"    \"BRUSSELS\": {\r\n",
-							"        \"lat\": 50.846698,\r\n",
-							"        \"lon\": 4.352522\r\n",
-							"    },\r\n",
-							"    \"DUBLIN\": {\r\n",
-							"        \"lat\": 53.268889, \r\n",
-							"        \"lon\": -6.196880\r\n",
-							"    }\r\n",
-							"}"
-						],
-						"outputs": [],
-						"execution_count": null
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/PL - Main')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "P01 - Data Ingestion",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "P01 - Data Ingestion",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"dateAndTimeOfImport": {
-									"value": "@pipeline().TriggerTime",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/P01 - Data Ingestion')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Ingest Weather Data",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "PL - Ingest Weather Data",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"dateAndTimeOfImport": {
-									"value": "@pipeline().parameters.dateAndTimeOfImport",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"dateAndTimeOfImport": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "_LoadEntity"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/PL - Ingest Weather Data')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/HourlyMain')]",
-			"type": "Microsoft.Synapse/workspaces/triggers",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "PL - Main",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2022-06-01T16:00:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/PL - Main')]"
-			]
 		}
 	]
 }

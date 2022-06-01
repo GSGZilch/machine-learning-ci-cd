@@ -8,6 +8,9 @@
 		"owm-syn-001-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
+		"ls_kv_main_properties_typeProperties_baseUrl": {
+			"value": "https://mlcicd-kv-001.vault.azure.net/"
+		},
 		"owm-syn-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://owmadls001.dfs.core.windows.net"
 		}
