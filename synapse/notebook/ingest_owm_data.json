@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "dbdeae61-1914-4b05-9a33-723c5bd917b7"
+				"spark.autotune.trackingId": "3e2b8a3b-217f-4544-b5b3-9585b0ae7abe"
 			}
 		},
 		"metadata": {
@@ -118,8 +118,8 @@
 				"source": [
 					"key_vault_name = 'mlcicd-kv-001'\r\n",
 					"\r\n",
-					"api_endpoint = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-endpoint')\r\n",
-					"api_key = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-key')\r\n",
+					"api_endpoint = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-endpoint', 'ls_kv_main')\r\n",
+					"api_key = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-key', 'ls_kv_main')\r\n",
 					"\r\n",
 					"lat = LOCATION_COORDS[location.upper()][\"lat\"]\r\n",
 					"lon = LOCATION_COORDS[location.upper()][\"lon\"]\r\n",
@@ -132,6 +132,7 @@
 					"}\r\n",
 					"\r\n",
 					"resp = requests.get(api_endpoint, params=params)\r\n",
+					"data = resp.json()\r\n",
 					"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
 				],
 				"execution_count": 74
@@ -150,36 +151,7 @@
 					}
 				},
 				"source": [
-					"data = {\r\n",
-					"  \"lat\": 39.31,\r\n",
-					"  \"lon\": -74.5,\r\n",
-					"  \"timezone\": \"America/New_York\",\r\n",
-					"  \"timezone_offset\": -18000,\r\n",
-					"  \"current\": {\r\n",
-					"    \"dt\": 1646318698,\r\n",
-					"    \"sunrise\": 1646306882,\r\n",
-					"    \"sunset\": 1646347929,\r\n",
-					"    \"temp\": 282.21,\r\n",
-					"    \"feels_like\": 278.41,\r\n",
-					"    \"pressure\": 1014,\r\n",
-					"    \"humidity\": 65,\r\n",
-					"    \"dew_point\": 275.99,\r\n",
-					"    \"uvi\": 2.55,\r\n",
-					"    \"clouds\": 40,\r\n",
-					"    \"visibility\": 10000,\r\n",
-					"    \"wind_speed\": 8.75,\r\n",
-					"    \"wind_deg\": 360,\r\n",
-					"    \"wind_gust\": 13.89,\r\n",
-					"    \"weather\": [\r\n",
-					"      {\r\n",
-					"        \"id\": 802,\r\n",
-					"        \"main\": \"Clouds\",\r\n",
-					"        \"description\": \"scattered clouds\",\r\n",
-					"        \"icon\": \"03d\"\r\n",
-					"      }\r\n",
-					"    ]\r\n",
-					"  }\r\n",
-					"}"
+					"print(data)"
 				],
 				"execution_count": 86
 			},
