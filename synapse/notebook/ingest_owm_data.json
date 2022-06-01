@@ -1,0 +1,124 @@
+{
+	"name": "ingest_owm_data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkSmallCpu",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "169fc2b7-a073-48ac-a95e-b54b739d8532"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/SparkSmallCpu",
+				"name": "SparkSmallCpu",
+				"type": "Spark",
+				"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmallCpu",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"import requests"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"key_vault_name = 'mlcicd-kv-001'\r\n",
+					"\r\n",
+					"api_endpoint = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-endpoint')\r\n",
+					"api_key = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-key')"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"params = {\r\n",
+					"    \"lat\": 53,\r\n",
+					"    \"lon\": 6,\r\n",
+					"    \"appid\": api_key\r\n",
+					"}\r\n",
+					"\r\n",
+					"resp = requests.get(api_endpoint, params=params)\r\n",
+					"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"print(resp.json)"
+				],
+				"execution_count": 10
+			}
+		]
+	}
+}
