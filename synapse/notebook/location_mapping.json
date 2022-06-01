@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e8806ae2-2232-4326-8508-23fc3a0bfa22"
+				"spark.autotune.trackingId": "997001d7-4384-4c07-bde8-b6ee017e2e7f"
 			}
 		},
 		"metadata": {
@@ -37,8 +37,12 @@
 				"source": [
 					"LOCATION_COORDS = {\r\n",
 					"    \"BRUSSELS\": {\r\n",
-					"        \"lat\": 50,\r\n",
-					"        \"lon\": 5\r\n",
+					"        \"lat\": 50.846698,\r\n",
+					"        \"lon\": 4.352522\r\n",
+					"    },\r\n",
+					"    \"DUBLIN\": {\r\n",
+					"        \"lat\": 53.268889, \r\n",
+					"        \"lon\": -6.196880\r\n",
 					"    }\r\n",
 					"}"
 				],

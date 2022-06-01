@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b3d94524-93fc-4971-9207-c3b557a666bb"
+				"spark.autotune.trackingId": "dbdeae61-1914-4b05-9a33-723c5bd917b7"
 			}
 		},
 		"metadata": {
@@ -67,9 +67,9 @@
 				"source": [
 					"# Parameter cell to define default values for notebook input parameters\r\n",
 					"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
-					"location = \"Brussels\""
+					"location = \"brussels\""
 				],
-				"execution_count": 71
+				"execution_count": 83
 			},
 			{
 				"cell_type": "code",
@@ -82,7 +82,7 @@
 					"import pandas as pd\r\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 72
+				"execution_count": 84
 			},
 			{
 				"cell_type": "code",
@@ -100,7 +100,7 @@
 				"source": [
 					"%run utils/location_mapping"
 				],
-				"execution_count": 73
+				"execution_count": 85
 			},
 			{
 				"cell_type": "code",
@@ -181,7 +181,7 @@
 					"  }\r\n",
 					"}"
 				],
-				"execution_count": 75
+				"execution_count": 86
 			},
 			{
 				"cell_type": "code",
@@ -199,7 +199,7 @@
 				"source": [
 					"data[\"timestamp\"] = pipeline_trigger_time"
 				],
-				"execution_count": 76
+				"execution_count": 87
 			},
 			{
 				"cell_type": "code",
@@ -241,7 +241,7 @@
 					"    \"weather_icon\"\r\n",
 					"]"
 				],
-				"execution_count": 77
+				"execution_count": 88
 			},
 			{
 				"cell_type": "code",
@@ -262,7 +262,7 @@
 					"df = pd.json_normalize(df)\r\n",
 					"df.columns = column_names"
 				],
-				"execution_count": 78
+				"execution_count": 89
 			},
 			{
 				"cell_type": "code",
@@ -293,7 +293,7 @@
 					"\r\n",
 					"df.to_csv(output_path, index=False)"
 				],
-				"execution_count": 80
+				"execution_count": 90
 			}
 		]
 	}
