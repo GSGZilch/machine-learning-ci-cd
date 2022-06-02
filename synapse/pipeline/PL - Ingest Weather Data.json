@@ -20,7 +20,7 @@
 						"type": "NotebookReference"
 					},
 					"parameters": {
-						"pipeline_trigger_name": {
+						"pipeline_trigger_time": {
 							"value": {
 								"value": "@pipeline().parameters.dateAndTimeOfImport",
 								"type": "Expression"
@@ -60,7 +60,7 @@
 						"type": "NotebookReference"
 					},
 					"parameters": {
-						"pipeline_trigger_name": {
+						"pipeline_trigger_time": {
 							"value": {
 								"value": "@pipeline().parameters.dateAndTimeOfImport",
 								"type": "Expression"
