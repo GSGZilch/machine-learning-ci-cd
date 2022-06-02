@@ -1,0 +1,87 @@
+{
+	"name": "pyspark_helper_functions",
+	"properties": {
+		"folder": {
+			"name": "utils"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "bfe5866a-e6dc-41f9-a720-891147d52e62"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"def pyspark_read_csv(path):\r\n",
+					"    df = spark.read.load('abfss://dataplatform@owmadls001.dfs.core.windows.net/bronze/weather/brussels/2022/01/01/weather_20220101-120000.csv', \r\n",
+					"        format='csv', \r\n",
+					"        header=True)\r\n",
+					"    \r\n",
+					"    return df"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def get_adls_folder_path(dt, location):\r\n",
+					"    return f\"abfss://dataplatform@owmadls001.dfs.core.windows.net/bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def convert_to_dt(dt_string):\r\n",
+					"    return datetime.strptime(dt_string, \"%Y-%m-%d %H:%M:%S\")"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
