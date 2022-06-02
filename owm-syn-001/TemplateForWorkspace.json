@@ -273,7 +273,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -347,7 +347,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "97162e17-07fa-4378-9b8e-e64df30364bc"
+						"spark.autotune.trackingId": "29453347-01fc-4a16-9635-07ea386b5f4e"
 					}
 				},
 				"metadata": {
