@@ -331,6 +331,9 @@
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"folder": {
+					"name": "P01 - Data Ingestion"
+				},
 				"nbformat": 4,
 				"nbformat_minor": 2,
 				"bigDataPool": {
