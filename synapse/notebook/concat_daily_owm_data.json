@@ -6,6 +6,10 @@
 		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkSmallCpu",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -16,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f4783866-8037-448a-b83a-ee145c14eed7"
+				"spark.autotune.trackingId": "9498cd08-8a95-4523-bbe3-440ac4f8ba45"
 			}
 		},
 		"metadata": {
@@ -24,25 +28,91 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/SparkSmallCpu",
+				"name": "SparkSmallCpu",
+				"type": "Spark",
+				"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmallCpu",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
 				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"tags": [
+						"parameters"
+					]
+				},
 				"source": [
-					"\r\n",
-					"df = spark.read.load('abfss://dataplatform@owmadls001.dfs.core.windows.net/bronze/weather/brussels/2022/01/01/weather_20220101-120000.csv', format='csv'\r\n",
-					"## If header exists uncomment line below\r\n",
-					"##, header=True\r\n",
-					")\r\n",
-					"display(df.limit(10))"
+					"# Parameter cell to define default values for notebook input parameters\r\n",
+					"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
+					"location = \"brussels\""
 				],
-				"execution_count": null
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"%run utils/pyspark_helper_functions"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dt = convert_to_dt(pipeline_trigger_time)\r\n",
+					"\r\n",
+					"folder_path = get_adls_folder_path(dt, location)\r\n",
+					"\r\n",
+					"df = pyspark_read_csv(f\"{folder_path}/weather_20220101-120000.csv\")"
+				],
+				"execution_count": 3
 			}
 		]
 	}
