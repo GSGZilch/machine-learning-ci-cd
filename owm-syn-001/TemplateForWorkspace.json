@@ -92,7 +92,7 @@
 								"type": "NotebookReference"
 							},
 							"parameters": {
-								"pipeline_trigger_name": {
+								"pipeline_trigger_time": {
 									"value": {
 										"value": "@pipeline().parameters.dateAndTimeOfImport",
 										"type": "Expression"
@@ -132,7 +132,7 @@
 								"type": "NotebookReference"
 							},
 							"parameters": {
-								"pipeline_trigger_name": {
+								"pipeline_trigger_time": {
 									"value": {
 										"value": "@pipeline().parameters.dateAndTimeOfImport",
 										"type": "Expression"
@@ -347,7 +347,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "29453347-01fc-4a16-9635-07ea386b5f4e"
+						"spark.autotune.trackingId": "f73de330-1b4f-4ff8-99dc-dbc9707a4d57"
 					}
 				},
 				"metadata": {
@@ -372,15 +372,13 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import requests\r\n",
 							"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
