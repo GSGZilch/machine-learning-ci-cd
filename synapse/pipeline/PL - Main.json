@@ -15,7 +15,7 @@
 					"waitOnCompletion": true,
 					"parameters": {
 						"dateAndTimeOfImport": {
-							"value": "@pipeline().TriggerTime",
+							"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}.csv",
 							"type": "Expression"
 						}
 					}

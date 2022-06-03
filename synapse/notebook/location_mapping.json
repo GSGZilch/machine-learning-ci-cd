@@ -2,7 +2,7 @@
 	"name": "location_mapping",
 	"properties": {
 		"folder": {
-			"name": "utils"
+			"name": "_utils"
 		},
 		"nbformat": 4,
 		"nbformat_minor": 2,

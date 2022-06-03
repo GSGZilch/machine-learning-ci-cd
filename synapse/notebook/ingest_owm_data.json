@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "59b5e332-bf25-4d5d-b7a3-6a14f5b141fd"
+				"spark.autotune.trackingId": "fbc20b21-23ea-46e8-b62c-484ad32b227f"
 			}
 		},
 		"metadata": {
@@ -208,52 +208,9 @@
 					}
 				},
 				"source": [
-					"#column_names = [\r\n",
-					"#    \"lat\",\r\n",
-					"#    \"lon\",\r\n",
-					"#    \"timezone\",\r\n",
-					"#    \"timezone_offset\",\r\n",
-					"#    \"timestamp\",\r\n",
-					"#    \"dt\",\r\n",
-					"#    \"sunrise\",\r\n",
-					"#    \"sunset\",\r\n",
-					"#    \"temp\",\r\n",
-					"#    \"feels_like\",\r\n",
-					"#    \"pressure\",\r\n",
-					"#    \"humidity\",\r\n",
-					"#    \"dew_point\",\r\n",
-					"#    \"uvi\",\r\n",
-					"#    \"clouds\",\r\n",
-					"#    \"visibility\",\r\n",
-					"#    \"wind_speed\",\r\n",
-					"#    \"wind_deg\",\r\n",
-					"#    \"wind_gust\",\r\n",
-					"#    \"weather_id\",\r\n",
-					"#    \"weather_main\",\r\n",
-					"#    \"weather_description\",\r\n",
-					"#    \"weather_icon\"\r\n",
-					"#]"
-				],
-				"execution_count": 88
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
 					"df = pd.json_normalize(data)\r\n",
 					"df = df.explode('current.weather').to_dict(orient='records')\r\n",
-					"df = pd.json_normalize(df)\r\n",
-					"#df.columns = column_names"
+					"df = pd.json_normalize(df)"
 				],
 				"execution_count": 89
 			},
