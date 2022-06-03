@@ -12,13 +12,27 @@
 						"referenceName": "P01 - Data Ingestion",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true,
-					"parameters": {
-						"dateAndTimeOfImport": {
-							"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
-							"type": "Expression"
-						}
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "P02 - Data Transformation",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "P01 - Data Ingestion",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "P02 - Data Transformation",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
 				}
 			}
 		],
