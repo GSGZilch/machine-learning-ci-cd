@@ -193,7 +193,7 @@
 							"waitOnCompletion": true,
 							"parameters": {
 								"dateAndTimeOfImport": {
-									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}.csv",
+									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
 									"type": "Expression"
 								}
 							}
@@ -272,6 +272,26 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2022-06-01T16:00:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ScheduledMain')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
 				"runtimeState": "Started",
 				"pipelines": [
 					{
@@ -285,9 +305,9 @@
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2022-06-01T16:00:00Z",
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2022-06-03T12:08:00Z",
 						"timeZone": "UTC"
 					}
 				}
@@ -349,7 +369,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b505726a-47a0-4528-af39-729d0838377d"
+						"spark.autotune.trackingId": "b439bb41-530d-4495-a017-e9764e8c4a33"
 					}
 				},
 				"metadata": {
@@ -374,8 +394,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -487,11 +506,7 @@
 						"source": [
 							"folder_path = get_adls_folder_path(dt_before, 'silver', location)\r\n",
 							"\r\n",
-							"file_path = f\"weather_{dt_before.year}{dt_before.month:02d}{dt_before.day:02d}.csv\"\r\n",
-							"\r\n",
-							"output_path = f\"{folder_path}/{file_path}\"\r\n",
-							"\r\n",
-							"write_dataframe(full_day_df, output_path, partitions=1)"
+							"write_dataframe(full_day_df, folder_path, partitions=1)"
 						],
 						"outputs": [],
 						"execution_count": 41
