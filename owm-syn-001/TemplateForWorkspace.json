@@ -25,6 +25,15 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/DevSmallCpu')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/P01 - Data Ingestion')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -519,7 +528,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b439bb41-530d-4495-a017-e9764e8c4a33"
+						"spark.autotune.trackingId": "d0ee61a2-d4dd-4209-b400-bb4df32d7f74"
 					}
 				},
 				"metadata": {
@@ -998,7 +1007,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3ede03bc-a813-482b-9fda-f99b2e5df81d"
+						"spark.autotune.trackingId": "de48e59c-fc8e-40a0-85e7-7aa0a1a60e66"
 					}
 				},
 				"metadata": {
@@ -1038,6 +1047,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"def pyspark_read_csv(path):\r\n",
 							"    df = spark.read.load(path, \r\n",
@@ -1157,7 +1167,12 @@
 							"\r\n",
 							"    job_id = mssparkutils.env.getJobId()\r\n",
 							"\r\n",
-							"    return os.listdir(get_mounted_folder_path(dt, location, job_id))"
+							"    folder_path = get_mounted_folder_path(dt, location, job_id)\r\n",
+							"\r\n",
+							"    if os.path.exists(folder_path)\r\n",
+							"        return os.listdir(folder_path)\r\n",
+							"    else:\r\n",
+							"        return []"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -1198,6 +1213,31 @@
 				"autoPause": {
 					"enabled": true,
 					"delayInMinutes": 90
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 9,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.1",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "westeurope"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DevSmallCpu')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 60
 				},
 				"autoScale": {
 					"enabled": true,
