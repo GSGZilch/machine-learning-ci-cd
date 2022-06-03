@@ -69,6 +69,156 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/P02 - Data Transformation')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Concat Weather Data",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL - Concat Weather Data",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"dateAndTimeOfImport": {
+									"value": "@pipeline().parameters.dateAndTimeOfImport",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"dateAndTimeOfImport": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "_LoadEntity"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/PL - Concat Weather Data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL - Concat Weather Data')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Concat Weather - Brussels",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "concat_daily_owm_data",
+								"type": "NotebookReference"
+							},
+							"parameters": {
+								"pipeline_trigger_time": {
+									"value": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"type": "string"
+								},
+								"location": {
+									"value": {
+										"value": "brussels",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "SparkSmallCpu",
+								"type": "BigDataPoolReference"
+							}
+						}
+					},
+					{
+						"name": "Concat Weather - Dublin",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "concat_daily_owm_data",
+								"type": "NotebookReference"
+							},
+							"parameters": {
+								"pipeline_trigger_time": {
+									"value": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"type": "string"
+								},
+								"location": {
+									"value": {
+										"value": "dublin",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "SparkSmallCpu",
+								"type": "BigDataPoolReference"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"dateAndTimeOfImport": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "P02 - Data Transformation"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/notebooks/concat_daily_owm_data')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/SparkSmallCpu')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/PL - Ingest Weather Data')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
