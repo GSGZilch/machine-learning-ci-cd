@@ -1,13 +1,10 @@
 {
-	"name": "concat_daily_owm_data",
+	"name": "test",
 	"properties": {
-		"folder": {
-			"name": "P02 - Data Transformation"
-		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "DevSmallCpu",
+			"referenceName": "SparkSmallCpu",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
@@ -20,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "88060e9b-4345-4c63-852e-76e53b3f6e9f"
+				"spark.autotune.trackingId": "b4630b77-d7c2-4e8d-ba56-0eae3d65608d"
 			}
 		},
 		"metadata": {
@@ -34,10 +31,10 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/DevSmallCpu",
-				"name": "DevSmallCpu",
+				"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/SparkSmallCpu",
+				"name": "SparkSmallCpu",
 				"type": "Spark",
-				"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/DevSmallCpu",
+				"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmallCpu",
 				"auth": {
 					"type": "AAD",
 					"authResource": "https://dev.azuresynapse.net"
@@ -53,21 +50,10 @@
 		"cells": [
 			{
 				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
 				"source": [
-					"from datetime import timedelta"
+					"%run _utils/pyspark_helper_functions"
 				],
-				"execution_count": 40
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -80,17 +66,14 @@
 						"transient": {
 							"deleting": false
 						}
-					},
-					"tags": [
-						"parameters"
-					]
+					}
 				},
 				"source": [
 					"# Parameter cell to define default values for notebook input parameters\r\n",
 					"pipeline_trigger_time = \"2022-01-02 12:00:00\"\r\n",
 					"location = \"brussels\""
 				],
-				"execution_count": 33
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -106,9 +89,9 @@
 					}
 				},
 				"source": [
-					"%run _utils/pyspark_helper_functions"
+					"from csv import writer"
 				],
-				"execution_count": 34
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -121,42 +104,23 @@
 						"transient": {
 							"deleting": false
 						}
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"dt = convert_to_dt(pipeline_trigger_time)\r\n",
 					"\r\n",
-					"dt_before = dt - timedelta(days=1)\r\n",
+					"files = get_files_by_day(dt, 'bronze', location)\r\n",
 					"\r\n",
-					"files = get_files_by_day(dt_before, 'bronze', location)\r\n",
+					"folder_path = get_mounted_folder_path(dt, 'bronze', location)\r\n",
 					"\r\n",
-					"folder_path = get_adls_folder_path(dt_before, location)\r\n",
+					"row = [0 for _ in range(22)]\r\n",
 					"\r\n",
-					"dfs = [pyspark_read_csv(f\"{folder_path}/{file}\") for file in files]\r\n",
-					"\r\n",
-					"full_day_df = union_df_list(dfs)"
+					"with open(f\"{folder_path}/{file}\", 'a', newline='') as f:\r\n",
+					"    writer_obj = writer(f)\r\n",
+					"    writer_obj.writerow(row)"
 				],
-				"execution_count": 35
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"folder_path = get_adls_folder_path(dt_before, 'silver', location)\r\n",
-					"\r\n",
-					"write_dataframe(full_day_df, folder_path, partitions=1)"
-				],
-				"execution_count": 41
+				"execution_count": 9
 			}
 		]
 	}

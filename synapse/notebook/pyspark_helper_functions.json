@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "866bf8fd-fd7c-416c-b8f8-d49059003f3b"
+				"spark.autotune.trackingId": "72fc1b54-eea6-4bb6-9ff5-a3a952c39668"
 			}
 		},
 		"metadata": {
@@ -120,8 +120,9 @@
 					}
 				},
 				"source": [
-					"def get_mounted_folder_path(dt, location, job_id):\r\n",
-					"    return f\"/synfs/{job_id}/owmadls/bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
+					"def get_mounted_folder_path(dt, tier, location):\r\n",
+					"    job_id = mssparkutils.env.getJobId()\r\n",
+					"    return f\"/synfs/{job_id}/owmadls/{tier}/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
 				],
 				"execution_count": null
 			},
@@ -158,7 +159,7 @@
 					}
 				},
 				"source": [
-					"def get_files_by_day(dt, location):\r\n",
+					"def get_files_by_day(dt, tier, location):\r\n",
 					"    try:\r\n",
 					"        mssparkutils.fs.mount(\r\n",
 					"        \"abfss://dataplatform@owmadls001.dfs.core.windows.net/\",\r\n",
@@ -167,9 +168,7 @@
 					"    except:\r\n",
 					"        pass\r\n",
 					"\r\n",
-					"    job_id = mssparkutils.env.getJobId()\r\n",
-					"\r\n",
-					"    folder_path = get_mounted_folder_path(dt, location, job_id)\r\n",
+					"    folder_path = get_mounted_folder_path(dt, tier, location)\r\n",
 					"\r\n",
 					"    if os.path.exists(folder_path):\r\n",
 					"        return os.listdir(folder_path)\r\n",
