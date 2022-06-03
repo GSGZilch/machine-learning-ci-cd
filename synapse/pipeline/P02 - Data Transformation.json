@@ -1,0 +1,35 @@
+{
+	"name": "P02 - Data Transformation",
+	"properties": {
+		"activities": [
+			{
+				"name": "Concat Weather Data",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL - Concat Weather Data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"dateAndTimeOfImport": {
+							"value": "@pipeline().parameters.dateAndTimeOfImport",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"dateAndTimeOfImport": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "_LoadEntity"
+		},
+		"annotations": []
+	}
+}
