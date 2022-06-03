@@ -15,18 +15,13 @@
 					"waitOnCompletion": true,
 					"parameters": {
 						"dateAndTimeOfImport": {
-							"value": "@pipeline().parameters.dateAndTimeOfImport",
+							"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
 							"type": "Expression"
 						}
 					}
 				}
 			}
 		],
-		"parameters": {
-			"dateAndTimeOfImport": {
-				"type": "string"
-			}
-		},
 		"folder": {
 			"name": "_LoadEntity"
 		},
