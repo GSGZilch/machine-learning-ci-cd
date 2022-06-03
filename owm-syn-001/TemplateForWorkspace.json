@@ -52,7 +52,7 @@
 							"waitOnCompletion": true,
 							"parameters": {
 								"dateAndTimeOfImport": {
-									"value": "@pipeline().parameters.dateAndTimeOfImport",
+									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
 									"type": "Expression"
 								}
 							}
@@ -62,11 +62,6 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
-				},
-				"parameters": {
-					"dateAndTimeOfImport": {
-						"type": "string"
-					}
 				},
 				"folder": {
 					"name": "_LoadEntity"
@@ -96,7 +91,7 @@
 							"waitOnCompletion": true,
 							"parameters": {
 								"dateAndTimeOfImport": {
-									"value": "@pipeline().parameters.dateAndTimeOfImport",
+									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
 									"type": "Expression"
 								}
 							}
@@ -106,11 +101,6 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
-				},
-				"parameters": {
-					"dateAndTimeOfImport": {
-						"type": "string"
-					}
 				},
 				"folder": {
 					"name": "_LoadEntity"
@@ -350,12 +340,28 @@
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
-							"parameters": {
-								"dateAndTimeOfImport": {
-									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
-									"type": "Expression"
-								}
+							"parameters": {}
+						}
+					},
+					{
+						"name": "P02 - Data Transformation",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "P01 - Data Ingestion",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P02 - Data Transformation",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
 						}
 					}
 				],
@@ -366,7 +372,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]"
+				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]",
+				"[concat(variables('workspaceId'), '/pipelines/P02 - Data Transformation')]"
 			]
 		},
 		{
@@ -423,56 +430,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/HourlyMain')]",
-			"type": "Microsoft.Synapse/workspaces/triggers",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2022-06-01T16:00:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/ScheduledMain')]",
-			"type": "Microsoft.Synapse/workspaces/triggers",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "PL - Main",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 15,
-						"startTime": "2022-06-03T12:08:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/PL - Main')]"
 			]
 		},
 		{
@@ -1007,7 +964,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "de48e59c-fc8e-40a0-85e7-7aa0a1a60e66"
+						"spark.autotune.trackingId": "36873745-035c-4ed0-a483-b85e42c9a535"
 					}
 				},
 				"metadata": {
@@ -1047,7 +1004,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"def pyspark_read_csv(path):\r\n",
 							"    df = spark.read.load(path, \r\n",
