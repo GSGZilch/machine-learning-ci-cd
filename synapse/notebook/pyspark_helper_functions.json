@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d2ecdd42-0e66-4ae3-afd1-e3c3d78f1031"
+				"spark.autotune.trackingId": "3ede03bc-a813-482b-9fda-f99b2e5df81d"
 			}
 		},
 		"metadata": {
@@ -47,7 +47,9 @@
 				},
 				"source": [
 					"import os\r\n",
-					"from datetime import datetime"
+					"from datetime import datetime\r\n",
+					"from pyspark.sql import SparkSession \r\n",
+					"from pyspark.sql.types import * "
 				],
 				"execution_count": null
 			},
@@ -59,6 +61,29 @@
 					"        format='csv', \r\n",
 					"        header=True)\r\n",
 					"    return df"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def write_dataframe(df, path, partitions, csv=True, parquet=False, json=False):\r\n",
+					"    df = df.repartition(partitions)\r\n",
+					"\r\n",
+					"    if csv: df.write.csv(f\"{path}csv/\", mode='overwrite', header = 'true') \r\n",
+					"    if parquet: df.write.parquet(f\"{path}parquet/\", mode='overwrite') \r\n",
+					"    if json: df.write.json(f\"{path}json/\", mode='overwrite')"
 				],
 				"execution_count": null
 			},
