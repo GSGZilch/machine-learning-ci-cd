@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4a900755-0347-436e-a3b5-163add18fe37"
+				"spark.autotune.trackingId": "6198b598-9e24-454f-9807-0b1248196086"
 			}
 		},
 		"metadata": {
@@ -62,7 +62,7 @@
 					"import pandas as pd\r\n",
 					"from datetime import datetime"
 				],
-				"execution_count": 84
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -85,7 +85,7 @@
 					"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
 					"location = \"brussels\""
 				],
-				"execution_count": 83
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -103,7 +103,7 @@
 				"source": [
 					"%run _utils/location_mapping"
 				],
-				"execution_count": 85
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -121,7 +121,7 @@
 				"source": [
 					"%run _utils/pyspark_helper_functions"
 				],
-				"execution_count": null
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -156,7 +156,7 @@
 					"data = resp.json()\r\n",
 					"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
 				],
-				"execution_count": 74
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -174,7 +174,7 @@
 				"source": [
 					"print(data)"
 				],
-				"execution_count": 86
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -192,7 +192,7 @@
 				"source": [
 					"data[\"timestamp\"] = pipeline_trigger_time"
 				],
-				"execution_count": 87
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -212,7 +212,7 @@
 					"df = df.explode('current.weather').to_dict(orient='records')\r\n",
 					"df = pd.json_normalize(df)"
 				],
-				"execution_count": 89
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -232,11 +232,22 @@
 					"\r\n",
 					"folder_path = get_adls_folder_path(dt, 'bronze', location)\r\n",
 					"\r\n",
-					"file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}-{dt.hour:02d}{dt.minute:02d}{dt.second:02d}.csv\"\r\n",
+					"file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}.csv\"\r\n",
 					"\r\n",
-					"output_path = f\"{folder_path}/{file_name}\"\r\n",
+					"adls_files = get_files_by_day(dt, 'bronze', location)\r\n",
 					"\r\n",
-					"df.to_csv(output_path, index=False)"
+					"if file_name in adls_files:\r\n",
+					"    folder_path = get_mounted_folder_path(dt, 'bronze', location)\r\n",
+					"\r\n",
+					"    row = df.iloc[0, :].values.tolist()\r\n",
+					"\r\n",
+					"    with open(f\"{folder_path}/{file_name}\", 'a', newline='') as f:\r\n",
+					"        writer_obj = writer(f)\r\n",
+					"        writer_obj.writerow(row)\r\n",
+					"else:\r\n",
+					"    output_path = f\"{folder_path}/{file_name}\"\r\n",
+					"\r\n",
+					"    df.to_csv(output_path, index=False)"
 				],
 				"execution_count": 90
 			}
