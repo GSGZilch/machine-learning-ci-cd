@@ -22,11 +22,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"dateAndTimeOfImport": {
-				"type": "string"
-			}
-		},
 		"folder": {
 			"name": "_LoadEntity"
 		},
