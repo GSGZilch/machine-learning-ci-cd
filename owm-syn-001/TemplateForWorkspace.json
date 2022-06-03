@@ -513,6 +513,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://owmadls001.dfs.core.windows.net/dataplatform/bronze/weather/brussels/2022/01/01/weather_20220101-120000.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/concat_daily_owm_data')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -536,7 +556,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "88060e9b-4345-4c63-852e-76e53b3f6e9f"
+						"spark.autotune.trackingId": "19aeeb19-a1e1-43b9-88a2-ef6b7b147a1c"
 					}
 				},
 				"metadata": {
@@ -706,7 +726,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4a900755-0347-436e-a3b5-163add18fe37"
+						"spark.autotune.trackingId": "dfa844ea-7d71-485e-8e35-ce250a5a8022"
 					}
 				},
 				"metadata": {
@@ -731,13 +751,15 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"import requests\r\n",
 							"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
@@ -748,7 +770,7 @@
 							"from datetime import datetime"
 						],
 						"outputs": [],
-						"execution_count": 84
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
@@ -772,7 +794,7 @@
 							"location = \"brussels\""
 						],
 						"outputs": [],
-						"execution_count": 83
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -791,7 +813,7 @@
 							"%run _utils/location_mapping"
 						],
 						"outputs": [],
-						"execution_count": 85
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -810,7 +832,7 @@
 							"%run _utils/pyspark_helper_functions"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -846,7 +868,7 @@
 							"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
 						],
 						"outputs": [],
-						"execution_count": 74
+						"execution_count": 5
 					},
 					{
 						"cell_type": "code",
@@ -865,7 +887,7 @@
 							"print(data)"
 						],
 						"outputs": [],
-						"execution_count": 86
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -884,7 +906,7 @@
 							"data[\"timestamp\"] = pipeline_trigger_time"
 						],
 						"outputs": [],
-						"execution_count": 87
+						"execution_count": 7
 					},
 					{
 						"cell_type": "code",
@@ -905,7 +927,7 @@
 							"df = pd.json_normalize(df)"
 						],
 						"outputs": [],
-						"execution_count": 89
+						"execution_count": 8
 					},
 					{
 						"cell_type": "code",
@@ -925,11 +947,22 @@
 							"\r\n",
 							"folder_path = get_adls_folder_path(dt, 'bronze', location)\r\n",
 							"\r\n",
-							"file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}-{dt.hour:02d}{dt.minute:02d}{dt.second:02d}.csv\"\r\n",
+							"file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}.csv\"\r\n",
 							"\r\n",
-							"output_path = f\"{folder_path}/{file_name}\"\r\n",
+							"adls_files = get_files_by_day(dt, 'bronze', location)\r\n",
 							"\r\n",
-							"df.to_csv(output_path, index=False)"
+							"if file_name in adls_files:\r\n",
+							"    folder_path = get_mounted_folder_path(dt, 'bronze', location)\r\n",
+							"\r\n",
+							"    row = df.iloc[0, :].values.tolist()\r\n",
+							"\r\n",
+							"    with open(f\"{folder_path}/{file_name}\", 'a', newline='') as f:\r\n",
+							"        writer_obj = writer(f)\r\n",
+							"        writer_obj.writerow(row)\r\n",
+							"else:\r\n",
+							"    output_path = f\"{folder_path}/{file_name}\"\r\n",
+							"\r\n",
+							"    df.to_csv(output_path, index=False)"
 						],
 						"outputs": [],
 						"execution_count": 90
@@ -1232,7 +1265,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e6ec73a6-4c49-4476-955a-ad51510f072f"
+						"spark.autotune.trackingId": "b4630b77-d7c2-4e8d-ba56-0eae3d65608d"
 					}
 				},
 				"metadata": {
@@ -1257,15 +1290,13 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"%run _utils/pyspark_helper_functions"
 						],
