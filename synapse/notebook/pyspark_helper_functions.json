@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6644c275-9f5d-49c5-9dea-8e5781bff6f3"
+				"spark.autotune.trackingId": "d2ecdd42-0e66-4ae3-afd1-e3c3d78f1031"
 			}
 		},
 		"metadata": {
@@ -55,10 +55,9 @@
 				"cell_type": "code",
 				"source": [
 					"def pyspark_read_csv(path):\r\n",
-					"    df = spark.read.load('abfss://dataplatform@owmadls001.dfs.core.windows.net/bronze/weather/brussels/2022/01/01/weather_20220101-120000.csv', \r\n",
+					"    df = spark.read.load(path, \r\n",
 					"        format='csv', \r\n",
 					"        header=True)\r\n",
-					"    \r\n",
 					"    return df"
 				],
 				"execution_count": null
@@ -77,8 +76,8 @@
 					}
 				},
 				"source": [
-					"def get_adls_folder_path(dt, location):\r\n",
-					"    return f\"abfss://dataplatform@owmadls001.dfs.core.windows.net/bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
+					"def get_adls_folder_path(dt, tier, location):\r\n",
+					"    return f\"abfss://dataplatform@owmadls001.dfs.core.windows.net/{tier}/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
 				],
 				"execution_count": null
 			},
@@ -146,6 +145,29 @@
 					"    job_id = mssparkutils.env.getJobId()\r\n",
 					"\r\n",
 					"    return os.listdir(get_mounted_folder_path(dt, location, job_id))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def union_df_list(df_list):\r\n",
+					"    df = df_list[0]\r\n",
+					"    if len(df_list) > 1:\r\n",
+					"        for next_df in df_list[1:]:\r\n",
+					"            df = df.union(next_df)\r\n",
+					"    return df"
 				],
 				"execution_count": null
 			}
