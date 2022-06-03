@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8144cd7e-8f86-45d8-8d79-bb89f1f07d4f"
+				"spark.autotune.trackingId": "b439bb41-530d-4495-a017-e9764e8c4a33"
 			}
 		},
 		"metadata": {
@@ -154,11 +154,7 @@
 				"source": [
 					"folder_path = get_adls_folder_path(dt_before, 'silver', location)\r\n",
 					"\r\n",
-					"file_path = f\"weather_{dt_before.year}{dt_before.month:02d}{dt_before.day:02d}.csv\"\r\n",
-					"\r\n",
-					"output_path = f\"{folder_path}/{file_path}\"\r\n",
-					"\r\n",
-					"write_dataframe(full_day_df, output_path, partitions=1)"
+					"write_dataframe(full_day_df, folder_path, partitions=1)"
 				],
 				"execution_count": 41
 			}
