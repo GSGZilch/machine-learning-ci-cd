@@ -523,7 +523,7 @@
 				"nbformat": 4,
 				"nbformat_minor": 2,
 				"bigDataPool": {
-					"referenceName": "SparkSmallCpu",
+					"referenceName": "DevSmallCpu",
 					"type": "BigDataPoolReference"
 				},
 				"sessionProperties": {
@@ -536,7 +536,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "d0ee61a2-d4dd-4209-b400-bb4df32d7f74"
+						"spark.autotune.trackingId": "88060e9b-4345-4c63-852e-76e53b3f6e9f"
 					}
 				},
 				"metadata": {
@@ -550,10 +550,10 @@
 						"name": "python"
 					},
 					"a365ComputeOptions": {
-						"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/SparkSmallCpu",
-						"name": "SparkSmallCpu",
+						"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/DevSmallCpu",
+						"name": "DevSmallCpu",
 						"type": "Spark",
-						"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmallCpu",
+						"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/DevSmallCpu",
 						"auth": {
 							"type": "AAD",
 							"authResource": "https://dev.azuresynapse.net"
@@ -646,7 +646,7 @@
 							"\r\n",
 							"dt_before = dt - timedelta(days=1)\r\n",
 							"\r\n",
-							"files = get_files_by_day(dt_before, location)\r\n",
+							"files = get_files_by_day(dt_before, 'bronze', location)\r\n",
 							"\r\n",
 							"folder_path = get_adls_folder_path(dt_before, location)\r\n",
 							"\r\n",
@@ -1015,7 +1015,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "cca4f117-d23e-4c32-bc6f-12051874bcf7"
+						"spark.autotune.trackingId": "72fc1b54-eea6-4bb6-9ff5-a3a952c39668"
 					}
 				},
 				"metadata": {
@@ -1055,7 +1055,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"def pyspark_read_csv(path):\r\n",
 							"    df = spark.read.load(path, \r\n",
@@ -1124,8 +1123,9 @@
 							}
 						},
 						"source": [
-							"def get_mounted_folder_path(dt, location, job_id):\r\n",
-							"    return f\"/synfs/{job_id}/owmadls/bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
+							"def get_mounted_folder_path(dt, tier, location):\r\n",
+							"    job_id = mssparkutils.env.getJobId()\r\n",
+							"    return f\"/synfs/{job_id}/owmadls/{tier}/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
 						],
 						"outputs": [],
 						"execution_count": null
@@ -1164,7 +1164,7 @@
 							}
 						},
 						"source": [
-							"def get_files_by_day(dt, location):\r\n",
+							"def get_files_by_day(dt, tier, location):\r\n",
 							"    try:\r\n",
 							"        mssparkutils.fs.mount(\r\n",
 							"        \"abfss://dataplatform@owmadls001.dfs.core.windows.net/\",\r\n",
@@ -1173,9 +1173,7 @@
 							"    except:\r\n",
 							"        pass\r\n",
 							"\r\n",
-							"    job_id = mssparkutils.env.getJobId()\r\n",
-							"\r\n",
-							"    folder_path = get_mounted_folder_path(dt, location, job_id)\r\n",
+							"    folder_path = get_mounted_folder_path(dt, tier, location)\r\n",
 							"\r\n",
 							"    if os.path.exists(folder_path):\r\n",
 							"        return os.listdir(folder_path)\r\n",
@@ -1208,6 +1206,141 @@
 						],
 						"outputs": [],
 						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/test')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkSmallCpu",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "e6ec73a6-4c49-4476-955a-ad51510f072f"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/SparkSmallCpu",
+						"name": "SparkSmallCpu",
+						"type": "Spark",
+						"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmallCpu",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"%run _utils/pyspark_helper_functions"
+						],
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Parameter cell to define default values for notebook input parameters\r\n",
+							"pipeline_trigger_time = \"2022-01-02 12:00:00\"\r\n",
+							"location = \"brussels\""
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from csv import writer"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"dt = convert_to_dt(pipeline_trigger_time)\r\n",
+							"\r\n",
+							"files = get_files_by_day(dt, 'bronze', location)\r\n",
+							"\r\n",
+							"folder_path = get_mounted_folder_path(dt, 'bronze', location)\r\n",
+							"\r\n",
+							"row = [0 for _ in range(22)]\r\n",
+							"\r\n",
+							"with open(f\"{folder_path}/{file}\", 'a', newline='') as f:\r\n",
+							"    writer_obj = writer(f)\r\n",
+							"    writer_obj.writerow(row)"
+						],
+						"outputs": [],
+						"execution_count": 9
 					}
 				]
 			},
