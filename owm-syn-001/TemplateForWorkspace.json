@@ -349,7 +349,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c795bd75-6494-4f79-a84f-48d498ead7e2"
+						"spark.autotune.trackingId": "4495a23e-5bd5-4691-9ea7-99e61a9590e5"
 					}
 				},
 				"metadata": {
@@ -390,6 +390,25 @@
 								"transient": {
 									"deleting": false
 								}
+							}
+						},
+						"source": [
+							"from datetime import timedelta"
+						],
+						"outputs": [],
+						"execution_count": 40
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
 							},
 							"tags": [
 								"parameters"
@@ -397,11 +416,11 @@
 						},
 						"source": [
 							"# Parameter cell to define default values for notebook input parameters\r\n",
-							"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
+							"pipeline_trigger_time = \"2022-01-02 12:00:00\"\r\n",
 							"location = \"brussels\""
 						],
 						"outputs": [],
-						"execution_count": 26
+						"execution_count": 33
 					},
 					{
 						"cell_type": "code",
@@ -420,7 +439,7 @@
 							"%run _utils/pyspark_helper_functions"
 						],
 						"outputs": [],
-						"execution_count": 27
+						"execution_count": 34
 					},
 					{
 						"cell_type": "code",
@@ -438,12 +457,18 @@
 						"source": [
 							"dt = convert_to_dt(pipeline_trigger_time)\r\n",
 							"\r\n",
-							"folder_path = get_adls_folder_path(dt, location)\r\n",
+							"dt_before = dt - timedelta(days=1)\r\n",
 							"\r\n",
-							"df = pyspark_read_csv(f\"{folder_path}/weather_20220101-120000.csv\")"
+							"files = get_files_by_day(dt_before, location)\r\n",
+							"\r\n",
+							"folder_path = get_adls_folder_path(dt_before, location)\r\n",
+							"\r\n",
+							"dfs = [pyspark_read_csv(f\"{folder_path}/{file}\") for file in files]\r\n",
+							"\r\n",
+							"full_day_df = union_df_list(dfs)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 35
 					},
 					{
 						"cell_type": "code",
@@ -459,12 +484,12 @@
 							}
 						},
 						"source": [
-							"files = get_files_by_day(dt, location)\r\n",
+							"folder_path = get_adls_folder_path(dt_before, 'silver', location)\r\n",
 							"\r\n",
-							"files"
+							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 41
 					}
 				]
 			},
@@ -494,7 +519,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "556aec01-3477-4b87-a34b-1ae0d91901ea"
+						"spark.autotune.trackingId": "cf74cb62-3c43-4a0c-8768-7574993b9bdc"
 					}
 				},
 				"metadata": {
@@ -713,11 +738,11 @@
 						"source": [
 							"dt = convert_to_dt(pipeline_trigger_time)\r\n",
 							"\r\n",
-							"folder_path = get_adls_folder_path(dt, location)\r\n",
+							"folder_path = get_adls_folder_path(dt, 'bronze', location)\r\n",
 							"\r\n",
 							"file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}-{dt.hour:02d}{dt.minute:02d}{dt.second:02d}.csv\"\r\n",
 							"\r\n",
-							"output_path = f\"{adls_url}/{folder_path}/{file_name}\"\r\n",
+							"output_path = f\"{folder_path}/{file_name}\"\r\n",
 							"\r\n",
 							"df.to_csv(output_path, index=False)"
 						],
@@ -805,7 +830,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6644c275-9f5d-49c5-9dea-8e5781bff6f3"
+						"spark.autotune.trackingId": "d2ecdd42-0e66-4ae3-afd1-e3c3d78f1031"
 					}
 				},
 				"metadata": {
@@ -845,10 +870,9 @@
 						"cell_type": "code",
 						"source": [
 							"def pyspark_read_csv(path):\r\n",
-							"    df = spark.read.load('abfss://dataplatform@owmadls001.dfs.core.windows.net/bronze/weather/brussels/2022/01/01/weather_20220101-120000.csv', \r\n",
+							"    df = spark.read.load(path, \r\n",
 							"        format='csv', \r\n",
 							"        header=True)\r\n",
-							"    \r\n",
 							"    return df"
 						],
 						"outputs": [],
@@ -868,8 +892,8 @@
 							}
 						},
 						"source": [
-							"def get_adls_folder_path(dt, location):\r\n",
-							"    return f\"abfss://dataplatform@owmadls001.dfs.core.windows.net/bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
+							"def get_adls_folder_path(dt, tier, location):\r\n",
+							"    return f\"abfss://dataplatform@owmadls001.dfs.core.windows.net/{tier}/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
 						],
 						"outputs": [],
 						"execution_count": null
@@ -940,6 +964,30 @@
 							"    job_id = mssparkutils.env.getJobId()\r\n",
 							"\r\n",
 							"    return os.listdir(get_mounted_folder_path(dt, location, job_id))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def union_df_list(df_list):\r\n",
+							"    df = df_list[0]\r\n",
+							"    if len(df_list) > 1:\r\n",
+							"        for next_df in df_list[1:]:\r\n",
+							"            df = df.union(next_df)\r\n",
+							"    return df"
 						],
 						"outputs": [],
 						"execution_count": null
