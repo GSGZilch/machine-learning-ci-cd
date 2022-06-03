@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "3ede03bc-a813-482b-9fda-f99b2e5df81d"
+				"spark.autotune.trackingId": "36873745-035c-4ed0-a483-b85e42c9a535"
 			}
 		},
 		"metadata": {
@@ -169,7 +169,12 @@
 					"\r\n",
 					"    job_id = mssparkutils.env.getJobId()\r\n",
 					"\r\n",
-					"    return os.listdir(get_mounted_folder_path(dt, location, job_id))"
+					"    folder_path = get_mounted_folder_path(dt, location, job_id)\r\n",
+					"\r\n",
+					"    if os.path.exists(folder_path)\r\n",
+					"        return os.listdir(folder_path)\r\n",
+					"    else:\r\n",
+					"        return []"
 				],
 				"execution_count": null
 			},
