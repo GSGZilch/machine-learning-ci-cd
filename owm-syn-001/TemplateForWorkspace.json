@@ -349,7 +349,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4495a23e-5bd5-4691-9ea7-99e61a9590e5"
+						"spark.autotune.trackingId": "b505726a-47a0-4528-af39-729d0838377d"
 					}
 				},
 				"metadata": {
@@ -374,7 +374,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -486,7 +487,11 @@
 						"source": [
 							"folder_path = get_adls_folder_path(dt_before, 'silver', location)\r\n",
 							"\r\n",
-							""
+							"file_path = f\"weather_{dt_before.year}{dt_before.month:02d}{dt_before.day:02d}.csv\"\r\n",
+							"\r\n",
+							"output_path = f\"{folder_path}/{file_path}\"\r\n",
+							"\r\n",
+							"write_dataframe(full_day_df, output_path, partitions=1)"
 						],
 						"outputs": [],
 						"execution_count": 41
@@ -519,7 +524,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "cf74cb62-3c43-4a0c-8768-7574993b9bdc"
+						"spark.autotune.trackingId": "4a900755-0347-436e-a3b5-163add18fe37"
 					}
 				},
 				"metadata": {
@@ -544,15 +549,13 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import requests\r\n",
 							"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
@@ -830,7 +833,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "d2ecdd42-0e66-4ae3-afd1-e3c3d78f1031"
+						"spark.autotune.trackingId": "3ede03bc-a813-482b-9fda-f99b2e5df81d"
 					}
 				},
 				"metadata": {
@@ -861,7 +864,9 @@
 						},
 						"source": [
 							"import os\r\n",
-							"from datetime import datetime"
+							"from datetime import datetime\r\n",
+							"from pyspark.sql import SparkSession \r\n",
+							"from pyspark.sql.types import * "
 						],
 						"outputs": [],
 						"execution_count": null
@@ -874,6 +879,30 @@
 							"        format='csv', \r\n",
 							"        header=True)\r\n",
 							"    return df"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def write_dataframe(df, path, partitions, csv=True, parquet=False, json=False):\r\n",
+							"    df = df.repartition(partitions)\r\n",
+							"\r\n",
+							"    if csv: df.write.csv(f\"{path}csv/\", mode='overwrite', header = 'true') \r\n",
+							"    if parquet: df.write.parquet(f\"{path}parquet/\", mode='overwrite') \r\n",
+							"    if json: df.write.json(f\"{path}json/\", mode='overwrite')"
 						],
 						"outputs": [],
 						"execution_count": null
