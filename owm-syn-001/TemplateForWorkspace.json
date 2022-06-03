@@ -1240,6 +1240,37 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ScheduledTransform')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "P02 - Data Transformation",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-06-04T01:00:00Z",
+						"timeZone": "UTC",
+						"schedule": {}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/P02 - Data Transformation')]"
+			]
 		}
 	]
 }
