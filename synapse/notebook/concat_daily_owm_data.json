@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7c0931db-b25a-4041-8c89-c8bd31fb0bc3"
+				"spark.autotune.trackingId": "75354c13-5383-49b3-948b-4d300d9e1116"
 			}
 		},
 		"metadata": {
@@ -72,7 +72,7 @@
 					"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
 					"location = \"brussels\""
 				],
-				"execution_count": 1
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -90,7 +90,7 @@
 				"source": [
 					"%run utils/pyspark_helper_functions"
 				],
-				"execution_count": 2
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -112,7 +112,7 @@
 					"\r\n",
 					"df = pyspark_read_csv(f\"{folder_path}/weather_20220101-120000.csv\")"
 				],
-				"execution_count": 3
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -128,105 +128,11 @@
 					}
 				},
 				"source": [
-					"mssparkutils.fs.mount(\r\n",
-					"    \"abfss://dataplatform@owmadls001.dfs.core.windows.net/\",\r\n",
-					"    \"/owmadls\",\r\n",
-					"    {\"linkedService\": \"owm-syn-001-WorkspaceDefaultStorage\"}\r\n",
-					")"
-				],
-				"execution_count": 16
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"job_id = mssparkutils.env.getJobId()"
-				],
-				"execution_count": 20
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"mssparkutils.fs.ls(\"synfs:/74/owmadls\")"
-				],
-				"execution_count": 18
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"import os\r\n",
-					"print(os.listdir(f\"/synfs/{job_id}/owmadls/bronze/\"))"
-				],
-				"execution_count": 19
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"os.listdir(\"synfs\")"
-				],
-				"execution_count": 6
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"files = os.listdir(f\"/synfs/{job_id}/owmadls/bronze/weather/brussels/2022/01/01\")\r\n",
+					"files = get_files_by_day(dt, location)\r\n",
+					"\r\n",
 					"files"
 				],
-				"execution_count": 25
+				"execution_count": null
 			}
 		]
 	}

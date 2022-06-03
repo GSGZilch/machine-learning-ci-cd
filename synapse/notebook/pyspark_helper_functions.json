@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d5a8f1d7-34af-49e4-a9bc-bccfb7f012da"
+				"spark.autotune.trackingId": "6644c275-9f5d-49c5-9dea-8e5781bff6f3"
 			}
 		},
 		"metadata": {
@@ -46,6 +46,7 @@
 					}
 				},
 				"source": [
+					"import os\r\n",
 					"from datetime import datetime"
 				],
 				"execution_count": null
@@ -95,8 +96,56 @@
 					}
 				},
 				"source": [
+					"def get_mounted_folder_path(dt, location, job_id):\r\n",
+					"    return f\"/synfs/{job_id}/owmadls/bronze/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
 					"def convert_to_dt(dt_string):\r\n",
 					"    return datetime.strptime(dt_string, \"%Y-%m-%d %H:%M:%S\")"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def get_files_by_day(dt, location):\r\n",
+					"    try:\r\n",
+					"        mssparkutils.fs.mount(\r\n",
+					"        \"abfss://dataplatform@owmadls001.dfs.core.windows.net/\",\r\n",
+					"        \"/owmadls\",\r\n",
+					"        {\"linkedService\": \"owm-syn-001-WorkspaceDefaultStorage\"})\r\n",
+					"    except:\r\n",
+					"        pass\r\n",
+					"\r\n",
+					"    job_id = mssparkutils.env.getJobId()\r\n",
+					"\r\n",
+					"    return os.listdir(get_mounted_folder_path(dt, location, job_id))"
 				],
 				"execution_count": null
 			}
