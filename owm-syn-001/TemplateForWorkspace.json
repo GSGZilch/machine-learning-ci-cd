@@ -706,7 +706,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6198b598-9e24-454f-9807-0b1248196086"
+						"spark.autotune.trackingId": "43f5c60a-c76b-4aec-bb06-9c9f191ade26"
 					}
 				},
 				"metadata": {
@@ -731,13 +731,15 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"import requests\r\n",
 							"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
@@ -745,7 +747,8 @@
 							"from pyspark.sql.functions import *\r\n",
 							"import json\r\n",
 							"import pandas as pd\r\n",
-							"from datetime import datetime"
+							"from datetime import datetime\r\n",
+							"from csv import writer"
 						],
 						"outputs": [],
 						"execution_count": 1
