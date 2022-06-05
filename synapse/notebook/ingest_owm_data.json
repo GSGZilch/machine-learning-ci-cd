@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6198b598-9e24-454f-9807-0b1248196086"
+				"spark.autotune.trackingId": "3a394ac2-8fc8-4b7e-9c90-1ca90922439a"
 			}
 		},
 		"metadata": {
@@ -60,7 +60,8 @@
 					"from pyspark.sql.functions import *\r\n",
 					"import json\r\n",
 					"import pandas as pd\r\n",
-					"from datetime import datetime"
+					"from datetime import datetime\r\n",
+					"from csv import writer"
 				],
 				"execution_count": 1
 			},
