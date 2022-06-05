@@ -215,7 +215,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Ingest Weather - Brussels",
+						"name": "Ingest Weather - All Locations",
 						"type": "SynapseNotebook",
 						"dependsOn": [],
 						"policy": {
@@ -235,53 +235,6 @@
 								"pipeline_trigger_time": {
 									"value": {
 										"value": "@pipeline().parameters.dateAndTimeOfImport",
-										"type": "Expression"
-									},
-									"type": "string"
-								},
-								"location": {
-									"value": {
-										"value": "brussels",
-										"type": "Expression"
-									},
-									"type": "string"
-								}
-							},
-							"snapshot": true,
-							"sparkPool": {
-								"referenceName": "SparkSmallCpu",
-								"type": "BigDataPoolReference"
-							}
-						}
-					},
-					{
-						"name": "Ingest Weather - Dublin",
-						"type": "SynapseNotebook",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebook": {
-								"referenceName": "ingest_owm_data",
-								"type": "NotebookReference"
-							},
-							"parameters": {
-								"pipeline_trigger_time": {
-									"value": {
-										"value": "@pipeline().parameters.dateAndTimeOfImport",
-										"type": "Expression"
-									},
-									"type": "string"
-								},
-								"location": {
-									"value": {
-										"value": "dublin",
 										"type": "Expression"
 									},
 									"type": "string"
@@ -706,7 +659,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "43f5c60a-c76b-4aec-bb06-9c9f191ade26"
+						"spark.autotune.trackingId": "49eea70f-2442-4b45-841f-cca9ea1c3ff8"
 					}
 				},
 				"metadata": {
@@ -731,15 +684,13 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import requests\r\n",
 							"from pyspark.sql.types import StructType, StructField, StringType, ArrayType, FloatType, IntegerType\r\n",
@@ -771,8 +722,7 @@
 						},
 						"source": [
 							"# Parameter cell to define default values for notebook input parameters\r\n",
-							"pipeline_trigger_time = \"2022-01-01 12:00:00\"\r\n",
-							"location = \"brussels\""
+							"pipeline_trigger_time = \"2022-01-01 12:00:00\""
 						],
 						"outputs": [],
 						"execution_count": 2
@@ -834,119 +784,51 @@
 							"api_endpoint = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-endpoint', 'ls_kv_main')\r\n",
 							"api_key = TokenLibrary.getSecret(key_vault_name, 'openweathermap-api-key', 'ls_kv_main')\r\n",
 							"\r\n",
-							"lat = LOCATION_COORDS[location.upper()][\"lat\"]\r\n",
-							"lon = LOCATION_COORDS[location.upper()][\"lon\"]\r\n",
 							"\r\n",
-							"params = {\r\n",
-							"    \"lat\": lat,\r\n",
-							"    \"lon\": lon,\r\n",
-							"    \"appid\": api_key,\r\n",
-							"    \"exclude\": \"minutely,hourly,daily\"\r\n",
-							"}\r\n",
+							"for location in LOCATION_COORDS:\r\n",
+							"    lat = LOCATION_COORDS[location.upper()][\"lat\"]\r\n",
+							"    lon = LOCATION_COORDS[location.upper()][\"lon\"]\r\n",
 							"\r\n",
-							"resp = requests.get(api_endpoint, params=params)\r\n",
-							"data = resp.json()\r\n",
-							"print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")"
+							"    params = {\r\n",
+							"        \"lat\": lat,\r\n",
+							"        \"lon\": lon,\r\n",
+							"        \"appid\": api_key,\r\n",
+							"        \"exclude\": \"minutely,hourly,daily\"\r\n",
+							"    }\r\n",
+							"\r\n",
+							"    resp = requests.get(api_endpoint, params=params)\r\n",
+							"    data = resp.json()\r\n",
+							"    print(f\"Status code: {resp.status_code}. Reason: {resp.reason}.\")\r\n",
+							"\r\n",
+							"    data[\"timestamp\"] = pipeline_trigger_time\r\n",
+							"\r\n",
+							"    df = pd.json_normalize(data)\r\n",
+							"    df = df.explode('current.weather').to_dict(orient='records')\r\n",
+							"    df = pd.json_normalize(df)\r\n",
+							"\r\n",
+							"    dt = convert_to_dt(pipeline_trigger_time)\r\n",
+							"\r\n",
+							"    folder_path = get_adls_folder_path(dt, 'bronze', location)\r\n",
+							"\r\n",
+							"    file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}.csv\"\r\n",
+							"\r\n",
+							"    adls_files = get_files_by_day(dt, 'bronze', location)\r\n",
+							"\r\n",
+							"    if file_name in adls_files:\r\n",
+							"        folder_path = get_mounted_folder_path(dt, 'bronze', location)\r\n",
+							"\r\n",
+							"        row = df.iloc[0, :].values.tolist()\r\n",
+							"\r\n",
+							"        with open(f\"{folder_path}/{file_name}\", 'a', newline='') as f:\r\n",
+							"            writer_obj = writer(f)\r\n",
+							"            writer_obj.writerow(row)\r\n",
+							"    else:\r\n",
+							"        output_path = f\"{folder_path}/{file_name}\"\r\n",
+							"\r\n",
+							"        df.to_csv(output_path, index=False)"
 						],
 						"outputs": [],
 						"execution_count": 5
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"print(data)"
-						],
-						"outputs": [],
-						"execution_count": 6
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"data[\"timestamp\"] = pipeline_trigger_time"
-						],
-						"outputs": [],
-						"execution_count": 7
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"df = pd.json_normalize(data)\r\n",
-							"df = df.explode('current.weather').to_dict(orient='records')\r\n",
-							"df = pd.json_normalize(df)"
-						],
-						"outputs": [],
-						"execution_count": 8
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"dt = convert_to_dt(pipeline_trigger_time)\r\n",
-							"\r\n",
-							"folder_path = get_adls_folder_path(dt, 'bronze', location)\r\n",
-							"\r\n",
-							"file_name = f\"weather_{dt.year}{dt.month:02d}{dt.day:02d}.csv\"\r\n",
-							"\r\n",
-							"adls_files = get_files_by_day(dt, 'bronze', location)\r\n",
-							"\r\n",
-							"if file_name in adls_files:\r\n",
-							"    folder_path = get_mounted_folder_path(dt, 'bronze', location)\r\n",
-							"\r\n",
-							"    row = df.iloc[0, :].values.tolist()\r\n",
-							"\r\n",
-							"    with open(f\"{folder_path}/{file_name}\", 'a', newline='') as f:\r\n",
-							"        writer_obj = writer(f)\r\n",
-							"        writer_obj.writerow(row)\r\n",
-							"else:\r\n",
-							"    output_path = f\"{folder_path}/{file_name}\"\r\n",
-							"\r\n",
-							"    df.to_csv(output_path, index=False)"
-						],
-						"outputs": [],
-						"execution_count": 90
 					}
 				]
 			},
@@ -1236,7 +1118,7 @@
 				},
 				"autoScale": {
 					"enabled": true,
-					"maxNodeCount": 9,
+					"maxNodeCount": 3,
 					"minNodeCount": 3
 				},
 				"nodeCount": 10,
