@@ -476,7 +476,7 @@
 				"nbformat": 4,
 				"nbformat_minor": 2,
 				"bigDataPool": {
-					"referenceName": "DevSmallCpu",
+					"referenceName": "SparkSmallCpu",
 					"type": "BigDataPoolReference"
 				},
 				"sessionProperties": {
@@ -489,7 +489,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "abc04a79-507c-4426-b3ce-6bd98109a4fd"
+						"spark.autotune.trackingId": "d84303e9-8c42-423f-9abe-b8d976d5821d"
 					}
 				},
 				"metadata": {
@@ -503,10 +503,10 @@
 						"name": "python"
 					},
 					"a365ComputeOptions": {
-						"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/DevSmallCpu",
-						"name": "DevSmallCpu",
+						"id": "/subscriptions/c9a2b097-83d7-4ec1-8355-dbd181b27e99/resourceGroups/om-ml-ci-cd/providers/Microsoft.Synapse/workspaces/owm-syn-001/bigDataPools/SparkSmallCpu",
+						"name": "SparkSmallCpu",
 						"type": "Spark",
-						"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/DevSmallCpu",
+						"endpoint": "https://owm-syn-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmallCpu",
 						"auth": {
 							"type": "AAD",
 							"authResource": "https://dev.azuresynapse.net"
@@ -514,7 +514,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
