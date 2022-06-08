@@ -1,0 +1,41 @@
+{
+	"name": "ds_adls_synw_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "owm-syn-001-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tier": {
+				"type": "string"
+			},
+			"dateAndTimeOfImport": {
+				"type": "string"
+			},
+			"location": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "weather_@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyyMMdd-hhmmss')}.csv",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@{dataset().tier}/weather/@{dataset().location}/@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyy/MM/dd')}",
+					"type": "Expression"
+				},
+				"fileSystem": "dataplatform"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
