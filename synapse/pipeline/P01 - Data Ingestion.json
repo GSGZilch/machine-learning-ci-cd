@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "PL - Ingest Weather Data",
+						"referenceName": "PL - Copy Weather Data",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,

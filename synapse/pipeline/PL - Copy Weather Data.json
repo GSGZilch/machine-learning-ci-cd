@@ -51,7 +51,9 @@
 							"key": {
 								"value": "@activity('Get API Key').output.value",
 								"type": "Expression"
-							}
+							},
+							"lat": "50.846698",
+							"lon": "4.352522"
 						}
 					}
 				],
@@ -65,10 +67,7 @@
 								"value": "@pipeline().parameters.dateAndTimeOfImport",
 								"type": "Expression"
 							},
-							"location": {
-								"value": "@pipeline().parameters.location",
-								"type": "Expression"
-							}
+							"location": "brussels"
 						}
 					}
 				]
@@ -101,9 +100,6 @@
 		],
 		"parameters": {
 			"dateAndTimeOfImport": {
-				"type": "string"
-			},
-			"location": {
 				"type": "string"
 			}
 		},
