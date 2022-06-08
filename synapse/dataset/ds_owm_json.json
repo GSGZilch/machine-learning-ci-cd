@@ -5,12 +5,26 @@
 			"referenceName": "ls_owm_endpoint",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"key": {
+				"type": "string"
+			},
+			"lat": {
+				"type": "string"
+			},
+			"lon": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "onecall"
+				"relativeUrl": {
+					"value": "onecall?appid=@{dataset().key}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
+					"type": "Expression"
+				}
 			}
 		},
 		"schema": {}
