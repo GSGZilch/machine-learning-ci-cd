@@ -15,27 +15,60 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "JsonSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "JsonWriteSettings"
 						}
 					},
 					"enableStaging": false
 				},
+				"inputs": [
+					{
+						"referenceName": "ds_owm_json",
+						"type": "DatasetReference"
+					}
+				],
 				"outputs": [
 					{
-						"referenceName": "ds_adls_synw_csv",
-						"type": "DatasetReference"
+						"referenceName": "ds_adls_synw_json",
+						"type": "DatasetReference",
+						"parameters": {
+							"tier": "bronze",
+							"dateAndTimeOfImport": {
+								"value": "@pipeline().parameters.dateAndTimeOfImport",
+								"type": "Expression"
+							},
+							"location": {
+								"value": "@pipeline().parameters.location",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
 		],
+		"parameters": {
+			"dateAndTimeOfImport": {
+				"type": "string"
+			},
+			"location": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "P01 - Data Ingestion"
 		},

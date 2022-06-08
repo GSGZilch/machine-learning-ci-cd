@@ -1,0 +1,17 @@
+{
+	"name": "ds_owm_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_owm_endpoint",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			}
+		},
+		"schema": {}
+	}
+}
