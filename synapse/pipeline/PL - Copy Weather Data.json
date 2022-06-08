@@ -5,7 +5,14 @@
 			{
 				"name": "Copy Weather Data",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Get API Key",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -39,7 +46,13 @@
 				"inputs": [
 					{
 						"referenceName": "ds_owm_json",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"key": {
+								"value": "@activity('Get API Key').output.value",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"outputs": [
@@ -59,6 +72,31 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Get API Key",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://mlcicd-kv-001.vault.azure.net/secrets/openweathermap-api-key/e81899b254ad4eea8abcf5cf713b9d02?api-version=7.0",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
 			}
 		],
 		"parameters": {
