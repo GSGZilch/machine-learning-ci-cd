@@ -23,13 +23,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "JsonSource",
-						"storeSettings": {
-							"type": "HttpReadSettings",
-							"requestMethod": "GET"
-						},
-						"formatSettings": {
-							"type": "JsonReadSettings"
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"supportRFC5988": "true"
 						}
 					},
 					"sink": {
@@ -45,10 +44,10 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_owm_json",
+						"referenceName": "ds_rest_owm_json",
 						"type": "DatasetReference",
 						"parameters": {
-							"key": {
+							"appid": {
 								"value": "@activity('Get API Key').output.value",
 								"type": "Expression"
 							},

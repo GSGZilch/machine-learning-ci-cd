@@ -1,0 +1,29 @@
+{
+	"name": "ds_rest_owm_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_rest_owm",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"appid": {
+				"type": "string"
+			},
+			"lat": {
+				"type": "string"
+			},
+			"lon": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "onecall?appid=@{dataset().appid}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
