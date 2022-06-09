@@ -11,11 +11,11 @@
 		"ls_kv_main_properties_typeProperties_baseUrl": {
 			"value": "https://mlcicd-kv-001.vault.azure.net/"
 		},
-		"owm-syn-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
-			"value": "https://owmadls001.dfs.core.windows.net"
-		},
 		"ls_owm_endpoint_properties_typeProperties_url": {
 			"value": "https://api.openweathermap.org/data/2.5"
+		},
+		"owm-syn-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://owmadls001.dfs.core.windows.net"
 		}
 	}
 }

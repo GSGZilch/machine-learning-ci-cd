@@ -15,13 +15,13 @@
 			"type": "string",
 			"defaultValue": "https://mlcicd-kv-001.vault.azure.net/"
 		},
-		"owm-syn-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://owmadls001.dfs.core.windows.net"
-		},
 		"ls_owm_endpoint_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://api.openweathermap.org/data/2.5"
+		},
+		"owm-syn-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://owmadls001.dfs.core.windows.net"
 		}
 	},
 	"variables": {
@@ -330,8 +330,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/ds_adls_synw_json')]",
 				"[concat(variables('workspaceId'), '/datasets/ds_owm_json')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_adls_synw_json')]",
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
@@ -494,6 +494,85 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/ds_adls_synw_json')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "owm-syn-001-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"tier": {
+						"type": "string"
+					},
+					"dateAndTimeOfImport": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "weather_@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyyMMdd-hhmmss')}.json",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@{dataset().tier}/weather/@{dataset().location}/@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyy/MM/dd')}",
+							"type": "Expression"
+						},
+						"fileSystem": "dataplatform"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/owm-syn-001-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_owm_json')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_owm_endpoint",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"key": {
+						"type": "string"
+					},
+					"lat": {
+						"type": "string"
+					},
+					"lon": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "/onecall?appid=@{dataset().key}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
+							"type": "Expression"
+						}
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_owm_endpoint')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/ls_kv_main')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -505,6 +584,27 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_owm_endpoint')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_owm_endpoint_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/owm-syn-001-WorkspaceDefaultSqlServer')]",
@@ -1304,106 +1404,6 @@
 			},
 			"dependsOn": [],
 			"location": "westeurope"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/ls_owm_endpoint')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('ls_owm_endpoint_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/ds_owm_json')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_owm_endpoint",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"key": {
-						"type": "string"
-					},
-					"lat": {
-						"type": "string"
-					},
-					"lon": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": {
-							"value": "onecall?appid=@{dataset().key}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
-							"type": "Expression"
-						}
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/ls_owm_endpoint')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/ds_adls_synw_json')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "owm-syn-001-WorkspaceDefaultStorage",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"tier": {
-						"type": "string"
-					},
-					"dateAndTimeOfImport": {
-						"type": "string"
-					},
-					"location": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "weather_@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyyMMdd-hhmmss')}.json",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@{dataset().tier}/weather/@{dataset().location}/@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyy/MM/dd')}",
-							"type": "Expression"
-						},
-						"fileSystem": "dataplatform"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/owm-syn-001-WorkspaceDefaultStorage')]"
-			]
 		}
 	]
 }
