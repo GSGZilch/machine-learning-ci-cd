@@ -22,7 +22,7 @@
 			"location": {
 				"type": "HttpServerLocation",
 				"relativeUrl": {
-					"value": "onecall",
+					"value": "onecall?appid=@{dataset().key}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
 					"type": "Expression"
 				}
 			}
