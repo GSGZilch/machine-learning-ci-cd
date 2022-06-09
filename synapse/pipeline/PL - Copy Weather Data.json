@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy Weather Data",
+				"name": "Copy Weather Data - Brussels",
 				"type": "Copy",
 				"dependsOn": [
 					{
