@@ -561,7 +561,7 @@
 					"location": {
 						"type": "HttpServerLocation",
 						"relativeUrl": {
-							"value": "/onecall?appid=@{dataset().key}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
+							"value": "onecall",
 							"type": "Expression"
 						}
 					}
