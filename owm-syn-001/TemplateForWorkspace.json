@@ -223,7 +223,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Copy Weather Data",
+						"name": "Copy Weather Data - Brussels",
 						"type": "Copy",
 						"dependsOn": [
 							{
@@ -271,8 +271,8 @@
 										"value": "@activity('Get API Key').output.value",
 										"type": "Expression"
 									},
-									"lat": "50",
-									"lon": "4"
+									"lat": "50.846698",
+									"lon": "4.352522"
 								}
 							}
 						],
@@ -316,6 +316,489 @@
 								"resource": "https://vault.azure.net"
 							}
 						}
+					},
+					{
+						"name": "Copy Weather Data - Dublin",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get API Key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_rest_owm_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"appid": {
+										"value": "@activity('Get API Key').output.value",
+										"type": "Expression"
+									},
+									"lat": "53.268889",
+									"lon": "-6.196880"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_synw_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"tier": "bronze",
+									"dateAndTimeOfImport": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"location": "brussels"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy Weather Data - Lisbon",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get API Key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_rest_owm_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"appid": {
+										"value": "@activity('Get API Key').output.value",
+										"type": "Expression"
+									},
+									"lat": "38.722099",
+									"lon": "-9.139568"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_synw_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"tier": "bronze",
+									"dateAndTimeOfImport": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"location": "lisbon"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy Weather Data - Budapest",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get API Key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_rest_owm_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"appid": {
+										"value": "@activity('Get API Key').output.value",
+										"type": "Expression"
+									},
+									"lat": "47.494512",
+									"lon": "19.051484"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_synw_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"tier": "bronze",
+									"dateAndTimeOfImport": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"location": "budapest"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy Weather Data - Rome",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get API Key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_rest_owm_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"appid": {
+										"value": "@activity('Get API Key').output.value",
+										"type": "Expression"
+									},
+									"lat": "41.899982",
+									"lon": "12.498880"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_synw_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"tier": "bronze",
+									"dateAndTimeOfImport": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"location": "rome"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy Weather Data - Copenhagen",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get API Key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_rest_owm_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"appid": {
+										"value": "@activity('Get API Key').output.value",
+										"type": "Expression"
+									},
+									"lat": "55.679559",
+									"lon": "12.572005"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_synw_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"tier": "bronze",
+									"dateAndTimeOfImport": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"location": "copenhagen"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy Weather Data - Prague",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get API Key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_rest_owm_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"appid": {
+										"value": "@activity('Get API Key').output.value",
+										"type": "Expression"
+									},
+									"lat": "50.071028",
+									"lon": "14.436498"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_synw_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"tier": "bronze",
+									"dateAndTimeOfImport": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"location": "prague"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy Weather Data - Athens",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get API Key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_rest_owm_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"appid": {
+										"value": "@activity('Get API Key').output.value",
+										"type": "Expression"
+									},
+									"lat": "37.978750",
+									"lon": "23.728545"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_synw_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"tier": "bronze",
+									"dateAndTimeOfImport": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"location": "athens"
+								}
+							}
+						]
 					}
 				],
 				"policy": {
