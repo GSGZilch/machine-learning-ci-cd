@@ -268,8 +268,8 @@
 										"value": "@activity('Get API Key').output.value",
 										"type": "Expression"
 									},
-									"lat": "50.846698",
-									"lon": "4.352522"
+									"lat": "50",
+									"lon": "4"
 								}
 							}
 						],
@@ -561,7 +561,7 @@
 					"location": {
 						"type": "HttpServerLocation",
 						"relativeUrl": {
-							"value": "onecall",
+							"value": "onecall?appid=@{dataset().key}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
 							"type": "Expression"
 						}
 					}
