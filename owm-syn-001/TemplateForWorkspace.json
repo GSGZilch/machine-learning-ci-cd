@@ -19,6 +19,10 @@
 			"type": "string",
 			"defaultValue": "https://api.openweathermap.org/data/2.5"
 		},
+		"ls_rest_owm_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.openweathermap.org/data/2.5"
+		},
 		"owm-syn-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://owmadls001.dfs.core.windows.net"
@@ -239,13 +243,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "JsonSource",
-								"storeSettings": {
-									"type": "HttpReadSettings",
-									"requestMethod": "GET"
-								},
-								"formatSettings": {
-									"type": "JsonReadSettings"
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
 								}
 							},
 							"sink": {
@@ -261,10 +264,10 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "ds_owm_json",
+								"referenceName": "ds_rest_owm_json",
 								"type": "DatasetReference",
 								"parameters": {
-									"key": {
+									"appid": {
 										"value": "@activity('Get API Key').output.value",
 										"type": "Expression"
 									},
@@ -330,7 +333,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/ds_owm_json')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_rest_owm_json')]",
 				"[concat(variables('workspaceId'), '/datasets/ds_adls_synw_json')]",
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
@@ -573,6 +576,40 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/ds_rest_owm_json')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_rest_owm",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"appid": {
+						"type": "string"
+					},
+					"lat": {
+						"type": "string"
+					},
+					"lon": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "onecall?appid=@{dataset().appid}&exclude=minutely,hourly,daily&lat=@{dataset().lat}&lon=@{dataset().lon}",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_rest_owm')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/ls_kv_main')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -594,6 +631,27 @@
 				"type": "HttpServer",
 				"typeProperties": {
 					"url": "[parameters('ls_owm_endpoint_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_rest_owm')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('ls_rest_owm_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
 				},
