@@ -1,5 +1,5 @@
 {
-	"name": "concat_daily_owm_data",
+	"name": "curate_weather_data",
 	"properties": {
 		"folder": {
 			"name": "P02 - Data Transformation"
@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "be9f917c-9ce4-48f2-a322-bb1e7524f66b"
+				"spark.autotune.trackingId": "9ea48219-9b5d-4227-93cb-ed1432b618e6"
 			}
 		},
 		"metadata": {

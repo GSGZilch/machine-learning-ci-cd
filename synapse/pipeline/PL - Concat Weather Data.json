@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "concat_daily_owm_data",
+						"referenceName": "curate_weather_data",
 						"type": "NotebookReference"
 					},
 					"parameters": {
@@ -30,46 +30,6 @@
 						"location": {
 							"value": {
 								"value": "brussels",
-								"type": "Expression"
-							},
-							"type": "string"
-						}
-					},
-					"snapshot": true,
-					"sparkPool": {
-						"referenceName": "SparkSmallCpu",
-						"type": "BigDataPoolReference"
-					}
-				}
-			},
-			{
-				"name": "Concat Weather - Dublin",
-				"type": "SynapseNotebook",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebook": {
-						"referenceName": "concat_daily_owm_data",
-						"type": "NotebookReference"
-					},
-					"parameters": {
-						"pipeline_trigger_time": {
-							"value": {
-								"value": "@pipeline().parameters.dateAndTimeOfImport",
-								"type": "Expression"
-							},
-							"type": "string"
-						},
-						"location": {
-							"value": {
-								"value": "dublin",
 								"type": "Expression"
 							},
 							"type": "string"
