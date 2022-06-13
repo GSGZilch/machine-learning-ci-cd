@@ -1404,7 +1404,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "49eea70f-2442-4b45-841f-cca9ea1c3ff8"
+						"spark.autotune.trackingId": "460cbcf7-ec35-4fa4-9e80-55149e8f31ff"
 					}
 				},
 				"metadata": {
@@ -1486,10 +1486,10 @@
 							}
 						},
 						"source": [
-							"%run _utils/location_mapping"
+							"%run _utils/pyspark_helper_functions"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -1505,10 +1505,10 @@
 							}
 						},
 						"source": [
-							"%run _utils/pyspark_helper_functions"
+							"%run _utils/location_mapping"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -1599,7 +1599,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "997001d7-4384-4c07-bde8-b6ee017e2e7f"
+						"spark.autotune.trackingId": "c44ec918-8d35-492b-9e67-e4722f7580c6"
 					}
 				},
 				"metadata": {
@@ -1617,6 +1617,7 @@
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"LOCATION_COORDS = {\r\n",
 							"    \"BRUSSELS\": {\r\n",
