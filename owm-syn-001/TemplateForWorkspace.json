@@ -341,7 +341,7 @@
 										"value": "@pipeline().parameters.dateAndTimeOfImport",
 										"type": "Expression"
 									},
-									"location": "brussels"
+									"location": "dublin"
 								}
 							}
 						]
@@ -1358,7 +1358,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "0184501a-b578-4303-ab97-210f2e70c9b1"
+						"spark.autotune.trackingId": "076f0023-6552-4e4b-8975-dc8bc144c9c6"
 					}
 				},
 				"metadata": {
@@ -1383,8 +1383,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -1408,7 +1407,7 @@
 							"import json"
 						],
 						"outputs": [],
-						"execution_count": 14
+						"execution_count": 39
 					},
 					{
 						"cell_type": "code",
@@ -1431,7 +1430,7 @@
 							"pipeline_trigger_time = \"2022-06-22 12:00:00\""
 						],
 						"outputs": [],
-						"execution_count": 28
+						"execution_count": 40
 					},
 					{
 						"cell_type": "code",
@@ -1450,7 +1449,7 @@
 							"%run _utils/constants"
 						],
 						"outputs": [],
-						"execution_count": 15
+						"execution_count": 41
 					},
 					{
 						"cell_type": "code",
@@ -1469,7 +1468,7 @@
 							"%run _utils/pyspark_helper_functions"
 						],
 						"outputs": [],
-						"execution_count": 16
+						"execution_count": 42
 					},
 					{
 						"cell_type": "code",
@@ -1502,7 +1501,7 @@
 							"]"
 						],
 						"outputs": [],
-						"execution_count": 17
+						"execution_count": 43
 					},
 					{
 						"cell_type": "code",
@@ -1552,7 +1551,7 @@
 							"        df.to_csv(f\"{output_path}/weather_{dt_minus.year}{dt_minus.month:02d}{dt_minus.day:02d}.csv\", index=False)"
 						],
 						"outputs": [],
-						"execution_count": 29
+						"execution_count": 44
 					},
 					{
 						"cell_type": "code",
