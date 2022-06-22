@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "13fe6e4b-d821-4380-9ed4-8e209d04435e"
+				"spark.autotune.trackingId": "1f2d4fe4-33e9-4f63-a909-773e6e2bcb1e"
 			}
 		},
 		"metadata": {
@@ -69,7 +69,7 @@
 					"import pandas as pd\r\n",
 					"import json"
 				],
-				"execution_count": 2
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -91,7 +91,25 @@
 					"# Parameter cell to define default values for notebook input parameters\r\n",
 					"pipeline_trigger_time = \"2022-06-22 12:00:00\""
 				],
-				"execution_count": 3
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"%run _utils/constants"
+				],
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -109,7 +127,7 @@
 				"source": [
 					"%run _utils/pyspark_helper_functions"
 				],
-				"execution_count": 4
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -125,36 +143,71 @@
 					}
 				},
 				"source": [
-					"for location in [\"brussels\"]:\r\n",
-					"    location = location.lower()\r\n",
-					"\r\n",
-					"    # get all filenames from last day\r\n",
-					"    dt = convert_to_dt(pipeline_trigger_time)\r\n",
-					"    dt_minus = dt - timedelta(days=1)\r\n",
-					"\r\n",
-					"    file_names = get_files_by_day(dt_minus, 'bronze', location)\r\n",
-					"    folder_path = get_mounted_path_by_day(dt_minus, 'bronze', location)\r\n",
-					"\r\n",
-					"    file_list = []\r\n",
-					"    for file_name in file_names:\r\n",
-					"        with open(os.path.join(folder_path, file_name), \"rb\") as f:\r\n",
-					"            file = json.load(f)\r\n",
-					"        file_list.append(file)\r\n",
-					"\r\n",
-					"    df_list = []\r\n",
-					"    for file in file_list:\r\n",
-					"        tmp_df = pd.json_normalize(file)\r\n",
-					"        tmp_df = tmp_df.explode('current.weather').to_dict(orient='records')\r\n",
-					"        tmp_df = pd.json_normalize(tmp_df)\r\n",
-					"        df_list.append(tmp_df)\r\n",
-					"\r\n",
-					"    df = pd.concat(df_list)\r\n",
-					"\r\n",
-					"    output_path = get_adls_path_by_day(dt_minus, 'silver', location)\r\n",
-					"\r\n",
-					"    df.to_csv(f\"{output_path}/weather_{dt_minus.year}{dt_minus.month:02d}{dt_minus.day:02d}.csv\")"
+					"times = [\r\n",
+					"    \"2022-06-10 12:00:00\",\r\n",
+					"    \"2022-06-11 12:00:00\",\r\n",
+					"    \"2022-06-12 12:00:00\",\r\n",
+					"    \"2022-06-13 12:00:00\",\r\n",
+					"    \"2022-06-14 12:00:00\",\r\n",
+					"    \"2022-06-15 12:00:00\",\r\n",
+					"    \"2022-06-16 12:00:00\",\r\n",
+					"    \"2022-06-17 12:00:00\",\r\n",
+					"    \"2022-06-18 12:00:00\",\r\n",
+					"    \"2022-06-19 12:00:00\",\r\n",
+					"    \"2022-06-20 12:00:00\",\r\n",
+					"    \"2022-06-21 12:00:00\",\r\n",
+					"    \"2022-06-22 12:00:00\",\r\n",
+					"]"
 				],
-				"execution_count": 7
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"for pipeline_trigger_time in times:\r\n",
+					"    for location in [\"brussels\"]:\r\n",
+					"        location = location.lower()\r\n",
+					"\r\n",
+					"        # get all filenames from last day\r\n",
+					"        dt = convert_to_dt(pipeline_trigger_time)\r\n",
+					"        dt_minus = dt - timedelta(days=1)\r\n",
+					"\r\n",
+					"        file_names = get_files_by_day(dt_minus, 'bronze', location)\r\n",
+					"        folder_path = get_mounted_path_by_day(dt_minus, 'bronze', location)\r\n",
+					"\r\n",
+					"        file_list = []\r\n",
+					"        for file_name in file_names:\r\n",
+					"            with open(os.path.join(folder_path, file_name), \"rb\") as f:\r\n",
+					"                file = json.load(f)\r\n",
+					"            file_list.append(file)\r\n",
+					"\r\n",
+					"        df_list = []\r\n",
+					"        for file in file_list:\r\n",
+					"            tmp_df = pd.json_normalize(file)\r\n",
+					"            tmp_df = tmp_df.explode('current.weather').to_dict(orient='records')\r\n",
+					"            tmp_df = pd.json_normalize(tmp_df)\r\n",
+					"            df_list.append(tmp_df)\r\n",
+					"\r\n",
+					"        df = pd.concat(df_list)\r\n",
+					"\r\n",
+					"        df.columns = OWM_COLUMNS\r\n",
+					"\r\n",
+					"        output_path = get_adls_path_by_day(dt_minus, 'silver', location)\r\n",
+					"\r\n",
+					"        df.to_csv(f\"{output_path}/weather_{dt_minus.year}{dt_minus.month:02d}{dt_minus.day:02d}.csv\", index=False)"
+				],
+				"execution_count": 13
 			}
 		]
 	}
