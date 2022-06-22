@@ -1,5 +1,5 @@
 {
-	"name": "location_mapping",
+	"name": "constants",
 	"properties": {
 		"folder": {
 			"name": "_utils"
@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "997001d7-4384-4c07-bde8-b6ee017e2e7f"
+				"spark.autotune.trackingId": "57888222-8c36-4540-b180-4182a6aab0cb"
 			}
 		},
 		"metadata": {
@@ -35,7 +35,7 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"LOCATION_COORDS = {\r\n",
+					"LOCATIONS = {\r\n",
 					"    \"BRUSSELS\": {\r\n",
 					"        \"lat\": 50.846698,\r\n",
 					"        \"lon\": 4.352522\r\n",
@@ -45,6 +45,48 @@
 					"        \"lon\": -6.196880\r\n",
 					"    }\r\n",
 					"}"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"OWM_COLUMNS = [\r\n",
+					"    \"LATITUDE\",\r\n",
+					"    \"LONGITUDE\",\r\n",
+					"    \"TIMEZONE\",\r\n",
+					"    \"TIMEZONE_OFFSET\",\r\n",
+					"    \"DATETIME\",\r\n",
+					"    \"SUNRISE\",\r\n",
+					"    \"SUNSET\",\r\n",
+					"    \"TEMPERATURE\",\r\n",
+					"    \"FEELS_LIKE\",\r\n",
+					"    \"PRESSURE\",\r\n",
+					"    \"HUMIDITY\",\r\n",
+					"    \"DEW_POINT\",\r\n",
+					"    \"UVI\",\r\n",
+					"    \"CLOUDS\",\r\n",
+					"    \"VISIBILTY\",\r\n",
+					"    \"WIND_SPEED\",\r\n",
+					"    \"WIND_DEGREE\",\r\n",
+					"    \"WEATHER_ID\",\r\n",
+					"    \"WEATHER_MAIN\",\r\n",
+					"    \"WEATHER_DESCRIPTION\",\r\n",
+					"    \"WEATHER_ICON\",\r\n",
+					"    \"RAIN\",\r\n",
+					"    \"WIND_GUST\"\r\n",
+					"]"
 				],
 				"execution_count": null
 			}
