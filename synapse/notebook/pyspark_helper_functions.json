@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "72fc1b54-eea6-4bb6-9ff5-a3a952c39668"
+				"spark.autotune.trackingId": "d08837f5-441b-4520-89f4-beb5c1e80c70"
 			}
 		},
 		"metadata": {
@@ -101,7 +101,7 @@
 					}
 				},
 				"source": [
-					"def get_adls_folder_path(dt, tier, location):\r\n",
+					"def get_adls_path_by_day(dt, tier, location):\r\n",
 					"    return f\"abfss://dataplatform@owmadls001.dfs.core.windows.net/{tier}/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
 				],
 				"execution_count": null
@@ -120,9 +120,51 @@
 					}
 				},
 				"source": [
-					"def get_mounted_folder_path(dt, tier, location):\r\n",
+					"def mount_adls(ls_name=\"owm-syn-001-WorkspaceDefaultStorage\", mount_point=\"/owmadls\"):\r\n",
+					"    mssparkutils.fs.mount(\r\n",
+					"        \"abfss://dataplatform@owmadls001.dfs.core.windows.net/\",\r\n",
+					"        mount_point,\r\n",
+					"        {\"linkedService\": ls_name})"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def get_mounted_path_by_day(dt, tier, location):\r\n",
 					"    job_id = mssparkutils.env.getJobId()\r\n",
 					"    return f\"/synfs/{job_id}/owmadls/{tier}/weather/{location.lower()}/{dt.year}/{dt.month:02d}/{dt.day:02d}\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def get_mounted_path_by_source(tier):\r\n",
+					"    job_id = mssparkutils.env.getJobId()\r\n",
+					"    return f\"/synfs/{job_id}/owmadls/{tier}/weather\""
 				],
 				"execution_count": null
 			},
@@ -161,14 +203,11 @@
 				"source": [
 					"def get_files_by_day(dt, tier, location):\r\n",
 					"    try:\r\n",
-					"        mssparkutils.fs.mount(\r\n",
-					"        \"abfss://dataplatform@owmadls001.dfs.core.windows.net/\",\r\n",
-					"        \"/owmadls\",\r\n",
-					"        {\"linkedService\": \"owm-syn-001-WorkspaceDefaultStorage\"})\r\n",
+					"        mount_adls()\r\n",
 					"    except:\r\n",
 					"        pass\r\n",
 					"\r\n",
-					"    folder_path = get_mounted_folder_path(dt, tier, location)\r\n",
+					"    folder_path = get_mounted_path_by_day(dt, tier, location)\r\n",
 					"\r\n",
 					"    if os.path.exists(folder_path):\r\n",
 					"        return os.listdir(folder_path)\r\n",
