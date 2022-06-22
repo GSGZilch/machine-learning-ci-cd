@@ -160,7 +160,7 @@
 								"value": "@pipeline().parameters.dateAndTimeOfImport",
 								"type": "Expression"
 							},
-							"location": "brussels"
+							"location": "dublin"
 						}
 					}
 				]
