@@ -78,13 +78,13 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Concat Weather Data",
+						"name": "Curate Weather Data",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "PL - Concat Weather Data",
+								"referenceName": "PL - Curate Weather Data",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -107,17 +107,17 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/PL - Concat Weather Data')]"
+				"[concat(variables('workspaceId'), '/pipelines/PL - Curate Weather Data')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/PL - Concat Weather Data')]",
+			"name": "[concat(parameters('workspaceName'), '/PL - Curate Weather Data')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"activities": [
 					{
-						"name": "Concat Weather - Brussels",
+						"name": "Curate Weather Data - All Locations",
 						"type": "SynapseNotebook",
 						"dependsOn": [],
 						"policy": {
@@ -137,13 +137,6 @@
 								"pipeline_trigger_time": {
 									"value": {
 										"value": "@pipeline().parameters.dateAndTimeOfImport",
-										"type": "Expression"
-									},
-									"type": "string"
-								},
-								"location": {
-									"value": {
-										"value": "brussels",
 										"type": "Expression"
 									},
 									"type": "string"
@@ -1358,7 +1351,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "59c98748-80c1-43dc-94f8-55cbe0518c26"
+						"spark.autotune.trackingId": "24c9ff02-a4f0-4ab7-af07-3ce6111b6c16"
 					}
 				},
 				"metadata": {
@@ -1383,8 +1376,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2062,6 +2054,44 @@
 			},
 			"dependsOn": [],
 			"location": "westeurope"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ScheduledCurate')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "P02 - Data Transformation",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-06-23T02:00:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								2
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/P02 - Data Transformation')]"
+			]
 		}
 	]
 }
