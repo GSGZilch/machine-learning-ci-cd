@@ -16,7 +16,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d08837f5-441b-4520-89f4-beb5c1e80c70"
+				"spark.autotune.trackingId": "1674c1bc-c49e-40d9-b1e7-5105effbc4bd"
 			}
 		},
 		"metadata": {
@@ -236,6 +236,40 @@
 					"        for next_df in df_list[1:]:\r\n",
 					"            df = df.union(next_df)\r\n",
 					"    return df"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def clean_column_names(df):\r\n",
+					"    columns = df.columns.tolist()\r\n",
+					"\r\n",
+					"    for i, col in enumerate(columns):\r\n",
+					"        if \"current.\" in col:\r\n",
+					"            col_name = col.replace(\"current.\", \"\")\r\n",
+					"            if \"weather.\" in col_name:\r\n",
+					"                col_name = col_name.replace(\".\", \"_\")\r\n",
+					"        else:\r\n",
+					"            col_name = col\r\n",
+					"            \r\n",
+					"        if col_name.endswith(\".1h\"):\r\n",
+					"            col_name = col_name.split(\".\")[0]\r\n",
+					"\r\n",
+					"        columns[i] = col_name\r\n",
+					"\r\n",
+					"    return columns"
 				],
 				"execution_count": null
 			}
