@@ -3,13 +3,13 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Concat Weather Data",
+				"name": "Curate Weather Data",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "PL - Concat Weather Data",
+						"referenceName": "PL - Curate Weather Data",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,

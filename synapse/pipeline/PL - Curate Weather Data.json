@@ -1,9 +1,9 @@
 {
-	"name": "PL - Concat Weather Data",
+	"name": "PL - Curate Weather Data",
 	"properties": {
 		"activities": [
 			{
-				"name": "Concat Weather - Brussels",
+				"name": "Curate Weather Data - All Locations",
 				"type": "SynapseNotebook",
 				"dependsOn": [],
 				"policy": {
@@ -23,13 +23,6 @@
 						"pipeline_trigger_time": {
 							"value": {
 								"value": "@pipeline().parameters.dateAndTimeOfImport",
-								"type": "Expression"
-							},
-							"type": "string"
-						},
-						"location": {
-							"value": {
-								"value": "brussels",
 								"type": "Expression"
 							},
 							"type": "string"
