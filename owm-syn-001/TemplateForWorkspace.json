@@ -51,7 +51,7 @@
 							"waitOnCompletion": true,
 							"parameters": {
 								"dateAndTimeOfImport": {
-									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
+									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss')}",
 									"type": "Expression"
 								}
 							}
@@ -90,7 +90,7 @@
 							"waitOnCompletion": true,
 							"parameters": {
 								"dateAndTimeOfImport": {
-									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd hh:mm:ss')}",
+									"value": "@{formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss')}",
 									"type": "Expression"
 								}
 							}
@@ -108,65 +108,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/pipelines/PL - Curate Weather Data')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/PL - Curate Weather Data')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Curate Weather Data - All Locations",
-						"type": "SynapseNotebook",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebook": {
-								"referenceName": "curate_weather_data",
-								"type": "NotebookReference"
-							},
-							"parameters": {
-								"pipeline_trigger_time": {
-									"value": {
-										"value": "@pipeline().parameters.dateAndTimeOfImport",
-										"type": "Expression"
-									},
-									"type": "string"
-								}
-							},
-							"snapshot": true,
-							"sparkPool": {
-								"referenceName": "SparkSmallCpu",
-								"type": "BigDataPoolReference"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"dateAndTimeOfImport": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "P02 - Data Transformation"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/notebooks/curate_weather_data')]",
-				"[concat(variables('workspaceId'), '/bigDataPools/SparkSmallCpu')]"
 			]
 		},
 		{
@@ -775,6 +716,65 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/PL - Curate Weather Data')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Curate Weather Data - All Locations",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "curate_weather_data",
+								"type": "NotebookReference"
+							},
+							"parameters": {
+								"pipeline_trigger_time": {
+									"value": {
+										"value": "@pipeline().parameters.dateAndTimeOfImport",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "SparkSmallCpu",
+								"type": "BigDataPoolReference"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"dateAndTimeOfImport": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "P02 - Data Transformation"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/notebooks/curate_weather_data')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/SparkSmallCpu')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/PL - Ingest Weather Data')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -1141,6 +1141,44 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ScheduledCurate')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "P02 - Data Transformation",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-06-23T02:00:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								2
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/P02 - Data Transformation')]"
 			]
 		},
 		{
@@ -2054,44 +2092,6 @@
 			},
 			"dependsOn": [],
 			"location": "westeurope"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/ScheduledCurate')]",
-			"type": "Microsoft.Synapse/workspaces/triggers",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "P02 - Data Transformation",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2022-06-23T02:00:00Z",
-						"timeZone": "UTC",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								2
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/P02 - Data Transformation')]"
-			]
 		}
 	]
 }
