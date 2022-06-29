@@ -1,5 +1,5 @@
 {
-	"name": "PL - Ingest Weather Data",
+	"name": "PL_DEPRECATED - Ingest Weather Data",
 	"properties": {
 		"activities": [
 			{
