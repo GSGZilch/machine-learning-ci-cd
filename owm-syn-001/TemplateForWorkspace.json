@@ -958,7 +958,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": {
-							"value": "weather_@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyyMMdd-hhmmss')}.json",
+							"value": "weather_@{formatDateTime(dataset().dateAndTimeOfImport, 'yyyyMMdd-HHmmss')}.json",
 							"type": "Expression"
 						},
 						"folderPath": {
