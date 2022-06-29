@@ -775,7 +775,60 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/PL - Ingest Weather Data')]",
+			"name": "[concat(parameters('workspaceName'), '/PL - Main')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "P01 - Data Ingestion",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P01 - Data Ingestion",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "P02 - Data Transformation",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "P01 - Data Ingestion",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P02 - Data Transformation",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]",
+				"[concat(variables('workspaceId'), '/pipelines/P02 - Data Transformation')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_DEPRECATED - Ingest Weather Data')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -831,59 +884,6 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/notebooks/ingest_owm_data')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/SparkSmallCpu')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/PL - Main')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "P01 - Data Ingestion",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "P01 - Data Ingestion",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "P02 - Data Transformation",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "P01 - Data Ingestion",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "P02 - Data Transformation",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/P01 - Data Ingestion')]",
-				"[concat(variables('workspaceId'), '/pipelines/P02 - Data Transformation')]"
 			]
 		},
 		{
